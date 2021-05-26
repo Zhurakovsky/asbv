@@ -1,8 +1,17 @@
-# Sample GitLab Project
+# Self-Balancing vehicle robotics motorcycle POC
 
-This sample project shows how a project in GitLab looks for demonstration purposes. It contains issues, merge requests and Markdown files in many branches,
-named and filled with lorem ipsum.
+**Description:**
+Usual behavior of a motorcycle is falling aside if current linear speed is not enough to keep balancing.
+The self-balancing effect can be achieved by using quite heavy and expensive HW gyroscope. 
+But nowadays, thanks to new generation of the Inertial Measurement Units, that provides high-frequency
+gyroscope and acceleration data, self-balancing effect can be achieved by steer-by-wire and indirect steering.  
 
-You can look around to get an idea how to structure your project and, when done, you can safely delete this project.
+IMU data can be processed by PID computation unit to obtain the most effective angle of handlebar rotation.
 
-[Learn more about creating GitLab projects.](https://docs.gitlab.com/ee/gitlab-basics/create-project.html)
+**The purpose of the proposed POC:**
+
+to create AUTOSAR solution, consist of three Software components (SWC):
+
+Sensor SWC, Controller SWC, Actuators SCW that works together to establish self-balancing of the motorcycle target.
+
+
