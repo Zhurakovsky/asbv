@@ -14,4 +14,7 @@ to create AUTOSAR solution, consist of three Software components (SWC):
 
 Sensor SWC, Controller SWC, Actuators SCW that works together to establish self-balancing of the motorcycle target.
 
+**Prerequirements**
+1. Ensure that cross-compilation available on your host computer: https://github.com/Pro/raspi-toolchain
+
 
