@@ -6,7 +6,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(pidControllerApp pid.cpp)
+set(COMMON_HEADERS_DIRECTORY ${COMMON_HEADERS_DIRECTORY}  PARENT_SCOPE)
+
+add_executable(pidControllerApp pid.cpp ${COMMON_HEADERS_DIRECTORY}/msg_types.hpp)
+
+target_include_directories(pidControllerApp PRIVATE ${COMMON_HEADERS_DIRECTORY})
 
 add_custom_command(TARGET pidControllerApp POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pidControllerApp> ${PROJECT_BINARY_DIR}/../pidControllerApp

@@ -18,3 +18,9 @@ Sensor SWC, Controller SWC, Actuators SCW that works together to establish self-
 1. Ensure that cross-compilation available on your host computer: https://github.com/Pro/raspi-toolchain
 
 
+**How to run**
+Run ./AutosarPocApp to start all three components on the Raspberry Pi platform.
+
+**Additional info**
+Example of Message Queue taken from here:
+https://www.geeksforgeeks.org/ipc-using-message-queues/

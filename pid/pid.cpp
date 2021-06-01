@@ -2,10 +2,16 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 
 #include <iostream>
+#include <random>
+
+#include "msg_types.hpp"
 
 using namespace std;
+using namespace poc_autosar;
 
 int main(int argc, char** argv)
 {
@@ -14,6 +20,9 @@ int main(int argc, char** argv)
     string child_app = "./actuatorApp";
     args[0] = (char*)child_app.c_str();
     args[1] = NULL;
+
+    key_t key;
+    int msgid;
 
     pid_t pid = fork();
     
@@ -31,10 +40,28 @@ int main(int argc, char** argv)
         break;
 
         default:
-        while (true)
         {
-            cout << "Hello from PID: " << getpid() << endl;
-            sleep(1);
+            key = ftok("autosar_poc", 42);
+            msgid = msgget(key, 0666 | IPC_CREAT);
+            MsgSensorToPid message;
+            PocMsgTypes expected_msg_type = PocMsgTypes::SENSOR_TO_PID;
+
+            while (true)
+            {
+                msgrcv(msgid, &message, sizeof(message), expected_msg_type, 0);
+                
+                cout << "PID: message from Sensor : " << 
+                message.linear_speed << ", " << 
+                message.roll_angle << ", " << 
+                message.roll_accelleration << endl;
+                
+                /*
+                // TODO: delete message queue on exit
+                msgctl(msgid, IPC_RMID, NULL);
+                */
+               
+                sleep(1);
+            }
         }
         wait(0);
     }
