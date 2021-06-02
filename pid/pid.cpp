@@ -5,8 +5,8 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
+#include <cmath>
 #include <iostream>
-#include <random>
 
 #include "msg_types.hpp"
 
@@ -33,7 +33,7 @@ int main(int argc, char** argv)
         break;
 
         case 0:
-        if ((execvp (args[0], args)) == -1 )
+        if ((execvp (args[0], args)) == -1)
         {
             perror("execvp");
         }
@@ -43,18 +43,32 @@ int main(int argc, char** argv)
         {
             key = ftok("autosar_poc", 42);
             msgid = msgget(key, 0666 | IPC_CREAT);
-            MsgSensorToPid message;
+            MsgSensorToPid in_message;
             PocMsgTypes expected_msg_type = PocMsgTypes::SENSOR_TO_PID;
+
+            MsgPidToActuator out_message;
+            out_message.msg_type = PocMsgTypes::PID_TO_ACTUATOR;
 
             while (true)
             {
-                msgrcv(msgid, &message, sizeof(message), expected_msg_type, 0);
+                msgrcv(msgid, &in_message, sizeof(in_message), expected_msg_type, 0);
                 
-                cout << "PID: message from Sensor : " << 
-                message.linear_speed << ", " << 
-                message.roll_angle << ", " << 
-                message.roll_accelleration << endl;
-                
+                cout << "PID: message from Sensor : " <<
+                in_message.linear_speed << ", " <<
+                in_message.roll_angle << ", " <<
+                in_message.roll_accelleration << endl;
+
+                /*
+                    Here is a main Math logic to calculate steering angle...
+                    After that, angle is calculated and go to the actuator process                
+                */
+
+                out_message.steer_ange = get_random();
+
+                // Just some dummy fuzzy logic
+                out_message.request_to_steer = (fabsf(out_message.steer_ange) < 0.05) ? false : true;
+
+                msgsnd(msgid, &out_message, sizeof(out_message), 0);
                 /*
                 // TODO: delete message queue on exit
                 msgctl(msgid, IPC_RMID, NULL);

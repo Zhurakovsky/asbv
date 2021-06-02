@@ -1,6 +1,8 @@
 #ifndef POC_EXAMPLE_COMMON_MSG_TYPES_HPP
 #define POC_EXAMPLE_COMMON_MSG_TYPES_HPP
 
+#include <random>
+
 namespace poc_autosar
 {
 

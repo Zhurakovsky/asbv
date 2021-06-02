@@ -6,7 +6,6 @@
 #include <sys/msg.h>
 
 #include <iostream>
-#include <random>
 
 #include "msg_types.hpp"
 
