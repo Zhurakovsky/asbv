@@ -11,6 +11,15 @@ int main(int argc, char** argv)
 {
     int status;
     char* args[2];
+
+    /*
+    Read config.
+    Config:
+        Sensor part {Carla | I2C | Autosar}
+        PID part {Raspberry | Autosar}
+        Actuator part {Carla | I2C | Autosar}
+
+    */
     string child_app = "./sensorApp";
     args[0] = (char*)child_app.c_str();
     args[1] = NULL;

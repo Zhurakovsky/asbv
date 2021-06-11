@@ -23,8 +23,8 @@ int main(int argc, char** argv)
         msgrcv(msgid, &message, sizeof(message), expected_msg_type, 0);
 
         cout << "Actuator: message from PID : " <<
-        message.steer_ange << ", " <<
-        (message.request_to_steer ? "True" : "False") << endl;
+        message.actuator_data.steer_ange << ", " <<
+        (message.actuator_data.request_to_steer ? "True" : "False") << endl;
 
         sleep(1);
     }

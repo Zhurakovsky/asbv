@@ -18,6 +18,7 @@ int main(int argc, char** argv)
     char* args[2];
     string child_app = "./pidControllerApp";
     args[0] = (char*)child_app.c_str();
+    
     args[1] = NULL;
 
     key_t key;
@@ -40,6 +41,8 @@ int main(int argc, char** argv)
 
         default:
         {
+            // ConcreteSensorInstance sensor
+
             key = ftok("autosar_poc", 42);
             msgid = msgget(key, 0666 | IPC_CREAT);
             MsgSensorToPid message;
@@ -47,15 +50,12 @@ int main(int argc, char** argv)
             
             while (true)
             {
-                message.linear_speed = get_random();
-                message.roll_angle = get_random();
-                message.roll_accelleration = get_random();
+                // sensor.read(&message);
+                message.sensor_data.linear_speed = get_random();
+                message.sensor_data.roll_angle = get_random();
+                message.sensor_data.roll_accelleration = get_random();
 
-                cout << "Sending from Sensor to PID: " << 
-                message.linear_speed << ", " << 
-                message.roll_angle << ", " << 
-                message.roll_accelleration << endl;
-
+                // RTE_SendMessage(&message);
                 msgsnd(msgid, &message, sizeof(message), 0);
                 
                 sleep(1);

@@ -12,21 +12,29 @@ enum PocMsgTypes : long
     PID_TO_ACTUATOR
 };
 
+struct SensorData
+{
+    float linear_speed;         // meters per second
+    float roll_angle;           // gegree
+    float roll_accelleration;   // degree per second
+};
+
 struct MsgSensorToPid 
 {
     PocMsgTypes msg_type;       // Part of linux message queue
+    SensorData sensor_data;
+};
 
-    float linear_speed;         // TODO: Add units
-    float roll_angle;           // TODO: Add units
-    float roll_accelleration;   // TODO: Add units
+struct ActuatorData
+{
+    float steer_ange;           // degree
+    bool request_to_steer;      // for speed around zero should be true
 };
 
 struct MsgPidToActuator 
 {
     PocMsgTypes msg_type;       // Part of linux message queue
-
-    float steer_ange;           // TODO: Add units
-    bool request_to_steer;      // TODO: Add legend
+    ActuatorData actuator_data;
 };
 
 static float get_random()

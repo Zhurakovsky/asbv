@@ -54,19 +54,19 @@ int main(int argc, char** argv)
                 msgrcv(msgid, &in_message, sizeof(in_message), expected_msg_type, 0);
                 
                 cout << "PID: message from Sensor : " <<
-                in_message.linear_speed << ", " <<
-                in_message.roll_angle << ", " <<
-                in_message.roll_accelleration << endl;
+                in_message.sensor_data.linear_speed << ", " <<
+                in_message.sensor_data.roll_angle << ", " <<
+                in_message.sensor_data.roll_accelleration << endl;
 
                 /*
                     Here is a main Math logic to calculate steering angle...
                     After that, angle is calculated and go to the actuator process                
                 */
 
-                out_message.steer_ange = get_random();
+                out_message.actuator_data.steer_ange = get_random();
 
                 // Just some dummy fuzzy logic
-                out_message.request_to_steer = (fabsf(out_message.steer_ange) < 0.05) ? false : true;
+                out_message.actuator_data.request_to_steer = (fabsf(out_message.actuator_data.steer_ange) < 0.05) ? false : true;
 
                 msgsnd(msgid, &out_message, sizeof(out_message), 0);
                 /*
