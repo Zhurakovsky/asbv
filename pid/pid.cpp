@@ -6,9 +6,10 @@
 #include <sys/msg.h>
 
 #include <cmath>
-#include <iostream>
+#include <memory>
 
 #include "msg_types.hpp"
+#include "pid_controller.hpp"
 
 using namespace std;
 using namespace poc_autosar;
@@ -49,24 +50,18 @@ int main(int argc, char** argv)
             MsgPidToActuator out_message;
             out_message.msg_type = PocMsgTypes::PID_TO_ACTUATOR;
 
+            std::unique_ptr<PidController> pid_controller;
+            
             while (true)
             {
                 msgrcv(msgid, &in_message, sizeof(in_message), expected_msg_type, 0);
                 
-                cout << "PID: message from Sensor : " <<
-                in_message.sensor_data.linear_speed << ", " <<
-                in_message.sensor_data.roll_angle << ", " <<
-                in_message.sensor_data.roll_accelleration << endl;
-
                 /*
                     Here is a main Math logic to calculate steering angle...
                     After that, angle is calculated and go to the actuator process                
                 */
 
-                out_message.actuator_data.steer_ange = get_random();
-
-                // Just some dummy fuzzy logic
-                out_message.actuator_data.request_to_steer = (fabsf(out_message.actuator_data.steer_ange) < 0.05) ? false : true;
+                pid_controller->calculateActuatorValues(in_message.sensor_data, out_message.actuator_data);
 
                 msgsnd(msgid, &out_message, sizeof(out_message), 0);
                 /*

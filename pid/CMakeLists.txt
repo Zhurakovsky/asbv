@@ -8,7 +8,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(COMMON_HEADERS_DIRECTORY ${COMMON_HEADERS_DIRECTORY}  PARENT_SCOPE)
 
-add_executable(pidControllerApp pid.cpp ${COMMON_HEADERS_DIRECTORY}/msg_types.hpp)
+add_executable(pidControllerApp pid.cpp 
+                                pid_controller.hpp 
+                                pid_controller.cpp 
+                                ${COMMON_HEADERS_DIRECTORY}/msg_types.hpp
+)
 
 target_include_directories(pidControllerApp PRIVATE ${COMMON_HEADERS_DIRECTORY})
 
