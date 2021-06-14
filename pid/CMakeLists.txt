@@ -12,6 +12,7 @@ add_executable(pidControllerApp pid.cpp
                                 pid_controller.hpp 
                                 pid_controller.cpp 
                                 ${COMMON_HEADERS_DIRECTORY}/msg_types.hpp
+                                ${COMMON_HEADERS_DIRECTORY}/types.hpp
                                 SensorToPidReceiver/sensor_to_pid_receiver.h
                                 PidToActuatorSender/pid_to_actuator_sender.h
 )
