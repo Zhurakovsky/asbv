@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
                 pid_controller->calculateActuatorValues(sensor_data, actuator_data);
                
-                pid_to_actuator_sender->send(&actuator_data);
+                pid_to_actuator_sender->send(actuator_data);
                 
                
                 sleep(1);

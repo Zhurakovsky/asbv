@@ -21,7 +21,7 @@ class IPidToActuatorSender
 {
 public:
     virtual ~IPidToActuatorSender() {};
-    virtual err_t send(ActuatorData* data) = 0;
+    virtual err_t send(const ActuatorData& data) = 0;
 };
 
 class PidToLinuxSender : public IPidToActuatorSender
@@ -37,11 +37,11 @@ public:
         msgid = msgget(key, 0666 | IPC_CREAT);
     }
 
-    err_t send(ActuatorData* data)
+    err_t send(const ActuatorData& data)
     {
         message.msg_type = PocMsgTypes::PID_TO_ACTUATOR;
-        message.actuator_data.steer_ange = data->steer_ange;
-        message.actuator_data.request_to_steer = data->request_to_steer;
+        message.actuator_data.steer_ange = data.steer_ange;
+        message.actuator_data.request_to_steer = data.request_to_steer;
 
         return msgsnd(msgid, &message, sizeof(message), 0) ? RC_FAIL : RC_SUCCESS;
     }
