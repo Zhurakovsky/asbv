@@ -33,8 +33,8 @@ private:
 public:
     PidToLinuxSender(const PidToLinuxSenderConfig& config)
     {
-        this->key = ftok(config.pathname.c_str(), config.proj_id);
-        this->msgid = msgget(key, 0666 | IPC_CREAT);
+        key= ftok(config.pathname.c_str(), config.proj_id);
+        msgid = msgget(key, 0666 | IPC_CREAT);
     }
 
     err_t send(ActuatorData* data)
@@ -43,7 +43,7 @@ public:
         message.actuator_data.steer_ange = data->steer_ange;
         message.actuator_data.request_to_steer = data->request_to_steer;
 
-        return msgsnd(this->msgid, &message, sizeof(message), 0) ? RC_FAIL : RC_SUCCESS;
+        return msgsnd(msgid, &message, sizeof(message), 0) ? RC_FAIL : RC_SUCCESS;
     }
 };
 

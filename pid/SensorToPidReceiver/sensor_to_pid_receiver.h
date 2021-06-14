@@ -34,15 +34,15 @@ private:
 public:
 	LinuxToPidReceiver(const LinuxToPidReceiverConfig& config)
 	{
-		this->key = ftok(config.pathname.c_str(), config.proj_id);
-		this->expected_msg_type = PocMsgTypes::SENSOR_TO_PID;
+		key = ftok(config.pathname.c_str(), config.proj_id);
+		expected_msg_type = PocMsgTypes::SENSOR_TO_PID;
 	}
 	
 	err_t receive(SensorData* data) override
 	{
-		int msgid = msgget(this->key, 0666 | IPC_CREAT);
-		msgrcv(msgid, &message, sizeof(message), this->expected_msg_type, 0);
-		*data = this->message.sensor_data;
+		int msgid = msgget(key, 0666 | IPC_CREAT);
+		msgrcv(msgid, &message, sizeof(message), expected_msg_type, 0);
+		*data = message.sensor_data;
 		return RC_SUCCESS;
 	};
 };
