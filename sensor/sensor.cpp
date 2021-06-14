@@ -8,6 +8,8 @@
 #include <iostream>
 
 #include "msg_types.hpp"
+#include "sensors.hpp"
+#include "sensortopidsenders.hpp"
 
 using namespace std;
 using namespace poc_autosar;
@@ -41,23 +43,18 @@ int main(int argc, char** argv)
 
         default:
         {
-            // ConcreteSensorInstance sensor
+            SensorData data;
+            LinuxToPidSenderConfig sender_config =  {.pathname = "autosar_poc", .proj_id = 42 };
+            ISensorToPidSender *sender = new LinuxToPidSender(sender_config);
+            ISensor *sensor = new RandomSensor();
 
-            key = ftok("autosar_poc", 42);
-            msgid = msgget(key, 0666 | IPC_CREAT);
-            MsgSensorToPid message;
-            message.msg_type = PocMsgTypes::SENSOR_TO_PID;
-            
             while (true)
             {
-                // sensor.read(&message);
-                message.sensor_data.linear_speed = get_random();
-                message.sensor_data.roll_angle = get_random();
-                message.sensor_data.roll_accelleration = get_random();
+                if (sensor->read(&data) != RC_SUCCESS) {
+                    continue;
+                }
+                sender->send(&data);
 
-                // RTE_SendMessage(&message);
-                msgsnd(msgid, &message, sizeof(message), 0);
-                
                 sleep(1);
             }
             wait(0);
