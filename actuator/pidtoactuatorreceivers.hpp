@@ -46,7 +46,7 @@ public:
     {
         int msgid = msgget(this->key, 0666 | IPC_CREAT);
         msgrcv(msgid, &message, sizeof(message), this->expected_msg_type, 0);
-        data = &(this->message.actuator_data);
+        *data = this->message.actuator_data;
 
         return RC_SUCCESS;
     };
