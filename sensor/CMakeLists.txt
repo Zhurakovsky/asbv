@@ -8,7 +8,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(COMMON_HEADERS_DIRECTORY ${COMMON_HEADERS_DIRECTORY}  PARENT_SCOPE)
 
-add_executable(sensorApp sensor.cpp ${COMMON_HEADERS_DIRECTORY}/msg_types.hpp)
+add_executable(sensorApp
+    sensor.cpp
+    sensors.hpp
+    sensortopidsenders.hpp
+    ${COMMON_HEADERS_DIRECTORY}/msg_types.hpp
+    ${COMMON_HEADERS_DIRECTORY}/types.hpp)
 
 target_include_directories(sensorApp PRIVATE ${COMMON_HEADERS_DIRECTORY})
 
