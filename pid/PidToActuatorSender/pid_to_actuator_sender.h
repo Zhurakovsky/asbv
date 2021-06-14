@@ -31,11 +31,8 @@ private:
     int msgid;
     MsgPidToActuator message;
 public:
-    PidToLinuxSender(const PidToLinuxSenderConfig& config)
-    {
-        key= ftok(config.pathname.c_str(), config.proj_id);
-        msgid = msgget(key, 0666 | IPC_CREAT);
-    }
+    PidToLinuxSender(const PidToLinuxSenderConfig& config) : key(ftok(config.pathname.c_str(), config.proj_id)), msgid(msgget(key, 0666 | IPC_CREAT))
+    {}
 
     err_t send(const ActuatorData& data)
     {

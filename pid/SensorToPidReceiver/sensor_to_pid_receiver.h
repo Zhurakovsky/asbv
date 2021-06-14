@@ -32,11 +32,8 @@ private:
 	PocMsgTypes expected_msg_type;
 	MsgSensorToPid message;
 public:
-	LinuxToPidReceiver(const LinuxToPidReceiverConfig& config)
-	{
-		key = ftok(config.pathname.c_str(), config.proj_id);
-		expected_msg_type = PocMsgTypes::SENSOR_TO_PID;
-	}
+	LinuxToPidReceiver(const LinuxToPidReceiverConfig& config) : key(ftok(config.pathname.c_str(), config.proj_id)), expected_msg_type(PocMsgTypes::SENSOR_TO_PID)
+	{}
 	
 	err_t receive(SensorData* data) override
 	{
