@@ -58,7 +58,7 @@ int main(int argc, char** argv)
             
             while (true)
             {
-                sensor_to_pid_receiver->receive(&sensor_data);
+                sensor_to_pid_receiver->receive(sensor_data);
 
                 pid_controller->calculateActuatorValues(sensor_data, actuator_data);
                
