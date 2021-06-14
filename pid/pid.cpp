@@ -10,8 +10,8 @@
 
 #include "msg_types.hpp"
 #include "pid_controller.hpp"
-#include "SensorToPidReceiver/sensor_to_pid_receiver.h"
-#include "PidToActuatorSender/pid_to_actuator_sender.h"
+#include "sensor_to_pid_receiver.h"
+#include "pid_to_actuator_sender.h"
 
 using namespace std;
 using namespace poc_autosar;
