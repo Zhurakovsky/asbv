@@ -27,10 +27,6 @@ public:
 
 class LinuxToPidReceiver : public ISensorToPidReceiver
 {
-private:
-	key_t key;
-	PocMsgTypes expected_msg_type;
-	MsgSensorToPid message;
 public:
 	LinuxToPidReceiver(const LinuxToPidReceiverConfig& config) : key(ftok(config.pathname.c_str(), config.proj_id)), expected_msg_type(PocMsgTypes::SENSOR_TO_PID)
 	{}
@@ -41,7 +37,11 @@ public:
 		msgrcv(msgid, &message, sizeof(message), expected_msg_type, 0);
 		*data = message.sensor_data;
 		return RC_SUCCESS;
-	};
+	}
+private:
+	key_t key;
+	PocMsgTypes expected_msg_type;
+	MsgSensorToPid message;
 };
 
 }

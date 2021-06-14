@@ -26,10 +26,6 @@ public:
 
 class PidToLinuxSender : public IPidToActuatorSender
 {
-private:
-    key_t key;
-    int msgid;
-    MsgPidToActuator message;
 public:
     PidToLinuxSender(const PidToLinuxSenderConfig& config) : key(ftok(config.pathname.c_str(), config.proj_id)), msgid(msgget(key, 0666 | IPC_CREAT))
     {}
@@ -42,6 +38,10 @@ public:
 
         return msgsnd(msgid, &message, sizeof(message), 0) ? RC_FAIL : RC_SUCCESS;
     }
+private:
+    key_t key;
+    int msgid;
+    MsgPidToActuator message;
 };
 
 }
