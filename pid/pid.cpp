@@ -10,6 +10,8 @@
 
 #include "msg_types.hpp"
 #include "pid_controller.hpp"
+#include "SensorToPidReceiver/sensor_to_pid_receiver.h"
+#include "PidToActuatorSender/pid_to_actuator_sender.h"
 
 using namespace std;
 using namespace poc_autosar;
@@ -41,33 +43,27 @@ int main(int argc, char** argv)
         break;
 
         default:
-        {
-            key = ftok("autosar_poc", 42);
-            msgid = msgget(key, 0666 | IPC_CREAT);
-            MsgSensorToPid in_message;
-            PocMsgTypes expected_msg_type = PocMsgTypes::SENSOR_TO_PID;
-
-            MsgPidToActuator out_message;
-            out_message.msg_type = PocMsgTypes::PID_TO_ACTUATOR;
-
+        {            
             std::unique_ptr<PidController> pid_controller;
+
+            LinuxToPidReceiverConfig receiver_config = { "autosar_poc", 42 };
+            std::unique_ptr<ISensorToPidReceiver> sensor_to_pid_receiver = std::make_unique<LinuxToPidReceiver>(receiver_config);    
+
+            PidToLinuxSenderConfig sender_config = { "autosar_poc", 42 };
+            std::unique_ptr<IPidToActuatorSender> pid_to_actuator_sender = std::make_unique<PidToLinuxSender>(sender_config);
+            
+            SensorData sensor_data;
+            ActuatorData actuator_data;            
+            
             
             while (true)
             {
-                msgrcv(msgid, &in_message, sizeof(in_message), expected_msg_type, 0);
+                sensor_to_pid_receiver->receive(&sensor_data);
+
+                pid_controller->calculateActuatorValues(sensor_data, actuator_data);
+               
+                pid_to_actuator_sender->send(&actuator_data);
                 
-                /*
-                    Here is a main Math logic to calculate steering angle...
-                    After that, angle is calculated and go to the actuator process                
-                */
-
-                pid_controller->calculateActuatorValues(in_message.sensor_data, out_message.actuator_data);
-
-                msgsnd(msgid, &out_message, sizeof(out_message), 0);
-                /*
-                // TODO: delete message queue on exit
-                msgctl(msgid, IPC_RMID, NULL);
-                */
                
                 sleep(1);
             }
