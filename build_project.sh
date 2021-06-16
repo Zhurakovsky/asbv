@@ -14,7 +14,7 @@ export RASPBIAN_ROOTFS=$HOME/rpi/rootfs
 export PATH=/opt/cross-pi-gcc/bin:/opt/cross-pi-gcc/libexec/gcc/arm-linux-gnueabihf/8.3.0:$PATH
 export RASPBERRY_VERSION=1
 
-cmake -DCMAKE_TOOLCHAIN_FILE=$DIR/Toolchain-rpi.cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+cmake -DCMAKE_PREFIX_PATH=$HOME/rpi/rootf/usr/lib -DCMAKE_TOOLCHAIN_FILE=$DIR/Toolchain-rpi.cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 make -j
 
 if [ ! -f config ]; then

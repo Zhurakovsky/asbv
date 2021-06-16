@@ -24,3 +24,12 @@ Run ./AutosarPocApp to start all three components on the Raspberry Pi platform.
 **Additional info**
 Example of Message Queue taken from here:
 https://www.geeksforgeeks.org/ipc-using-message-queues/
+
+
+**Sync libraries needed for cross-compilation**
+rsync -vR --progress -rl --delete-after --safe-links autosar@192.168.1.103:/{lib,usr,opt/vc/lib} $HOME/rpi/rootfs
+
+**Sync solution with Raspberry**
+rsync -r asbv/ autosar@192.168.1.103:~/AUTOSAR_POC/asbv
+
+sudo i2cdetect -y 1

@@ -1,10 +1,12 @@
 #ifndef ACTUATOR_ACTUATORS_HPP
 #define ACTUATOR_ACTUATORS_HPP
 
-#include "msg_types.hpp"
-#include "types.hpp"
 #include <string>
 #include <iostream>
+
+#include "msg_types.hpp"
+#include "types.hpp"
+#include <iomanip>
 
 namespace poc_autosar
 {
@@ -24,8 +26,8 @@ public:
     virtual const std::string describe() override { return "Bypass"; };
     err_t write(const ActuatorData &data) override
     {
-        std::cout << "ACTUATOR: Request to steer: " << (data.request_to_steer ? "Yes" : "No") << std::endl;
-        std::cout << "ACTUATOR: Steer angle: " << data.steer_ange << std::endl;
+        std::cout <<  "ACTUATOR: RTS: " << (data.request_to_steer ? "Yes" : "No") ;
+        std::cout << " Steer angle: " << data.steer_ange << std::endl;
         return RC_SUCCESS;
     };
 };
