@@ -16,3 +16,7 @@ export RASPBERRY_VERSION=1
 
 cmake -DCMAKE_TOOLCHAIN_FILE=$DIR/Toolchain-rpi.cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 make -j
+
+if [ ! -f config ]; then
+	cp $DIR/config config
+fi

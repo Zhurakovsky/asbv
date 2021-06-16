@@ -12,64 +12,68 @@
 #include "pid_controller.hpp"
 #include "SensorToPidReceiver/sensor_to_pid_receiver.h"
 #include "PidToActuatorSender/pid_to_actuator_sender.h"
+#include "config_mgmt.hpp"
 
 using namespace std;
 using namespace poc_autosar;
 
+
+err_t parse_cmdline(int argc, char** argv, PidSwcConfigType &config)
+{
+    CmdLineArgsParser parser(argc, argv);
+
+    if (parser.config_get<bool>("PID_TO_ACTUATOR_LINUX"s))
+        config.pid_to_actuator_sender = PidToActuator::LINUX_PID_TO_ACTUATOR;
+    if (parser.config_get<bool>("PID_TO_ACTUATOR_CAN"s))
+        config.pid_to_actuator_sender = PidToActuator::CAN_PID_TO_ACTUATOR;
+
+    if (parser.config_get<bool>("SENSOR_TO_PID_LINUX"s))
+        config.sensor_to_pid_receiver = SensorToPid::LINUX_SENSOR_TO_PID;
+    if (parser.config_get<bool>("SENSOR_TO_PID_CAN"s))
+        config.sensor_to_pid_receiver = SensorToPid::CAN_SENSOR_TO_PID;
+
+    config.linux_pid_to_actuator.pathname = parser.config_get<string>("SENSOR_TO_PID_LINUX_PATHNAME"s);
+    config.linux_pid_to_actuator.proj_id = parser.config_get<int>("SENSOR_TO_PID_LINUX_PROJID"s);
+
+    config.linux_pid_to_actuator.pathname = parser.config_get<string>("PID_TO_ACTUATOR_LINUX_PATHNAME"s);
+    config.linux_pid_to_actuator.proj_id = parser.config_get<int>("PID_TO_ACTUATOR_LINUX_PROJID"s);
+
+    return RC_SUCCESS;
+}
+
 int main(int argc, char** argv)
 {
-    int status;
-    char* args[2];
-    string child_app = "./actuatorApp";
-    args[0] = (char*)child_app.c_str();
-    args[1] = NULL;
+    PidSwcConfigType pid_config;
+    parse_cmdline(argc, argv, pid_config);
 
-    key_t key;
-    int msgid;
+    std::unique_ptr<PidController> pid_controller;
+    std::unique_ptr<ISensorToPidReceiver> sensor_to_pid_receiver(nullptr);
+    std::unique_ptr<IPidToActuatorSender> pid_to_actuator_sender(nullptr);
 
-    pid_t pid = fork();
+    if (pid_config.sensor_to_pid_receiver == SensorToPid::LINUX_SENSOR_TO_PID)
+        sensor_to_pid_receiver.reset(new LinuxToPidReceiver(pid_config.linux_sender_to_pid));
+
+    if (pid_config.pid_to_actuator_sender == PidToActuator::LINUX_PID_TO_ACTUATOR)
+        pid_to_actuator_sender.reset(new PidToLinuxSender(pid_config.linux_pid_to_actuator));
+
+    SensorData sensor_data;
+    ActuatorData actuator_data;            
     
-    switch(pid)
+    
+    while (true)
     {
-        case -1:
-        perror("PID fork");
-        break;
+        if (sensor_to_pid_receiver)
+            sensor_to_pid_receiver->receive(sensor_data);
 
-        case 0:
-        if ((execvp (args[0], args)) == -1)
-        {
-            perror("execvp");
-        }
-        break;
+        pid_controller->calculateActuatorValues(sensor_data, actuator_data);
 
-        default:
-        {            
-            std::unique_ptr<PidController> pid_controller;
+        if (pid_to_actuator_sender)
+            pid_to_actuator_sender->send(actuator_data);
 
-            LinuxToPidReceiverConfig receiver_config = { "autosar_poc", 42 };
-            std::unique_ptr<ISensorToPidReceiver> sensor_to_pid_receiver = std::make_unique<LinuxToPidReceiver>(receiver_config);    
 
-            PidToLinuxSenderConfig sender_config = { "autosar_poc", 42 };
-            std::unique_ptr<IPidToActuatorSender> pid_to_actuator_sender = std::make_unique<PidToLinuxSender>(sender_config);
-            
-            SensorData sensor_data;
-            ActuatorData actuator_data;            
-            
-            
-            while (true)
-            {
-                sensor_to_pid_receiver->receive(sensor_data);
-
-                pid_controller->calculateActuatorValues(sensor_data, actuator_data);
-               
-                pid_to_actuator_sender->send(actuator_data);
-                
-               
-                sleep(1);
-            }
-        }
-        wait(0);
+        sleep(1);
     }
+
 
     return 0;
 }
