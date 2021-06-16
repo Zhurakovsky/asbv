@@ -13,7 +13,9 @@ add_executable(actuatorApp
     actuators.hpp
     pidtoactuatorreceivers.hpp
     ${COMMON_HEADERS_DIRECTORY}/msg_types.hpp
-    ${COMMON_HEADERS_DIRECTORY}/types.hpp)
+    ${COMMON_HEADERS_DIRECTORY}/types.hpp
+    ${COMMON_HEADERS_DIRECTORY}/config_mgmt.hpp
+)
 
 target_include_directories(actuatorApp PRIVATE ${COMMON_HEADERS_DIRECTORY})
 

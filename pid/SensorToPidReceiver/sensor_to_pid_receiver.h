@@ -12,23 +12,17 @@
 namespace poc_autosar
 {
 
-struct LinuxToPidReceiverConfig
-{
-	std::string pathname;
-	int proj_id;
-};
-
 class ISensorToPidReceiver
 {
 public:
-	virtual ~ISensorToPidReceiver() {};
+	virtual ~ISensorToPidReceiver() = default;
 	virtual err_t receive(SensorData& data) = 0;
 };
 
 class LinuxToPidReceiver : public ISensorToPidReceiver
 {
 public:
-	LinuxToPidReceiver(const LinuxToPidReceiverConfig& config) : key(ftok(config.pathname.c_str(), config.proj_id)), expected_msg_type(PocMsgTypes::SENSOR_TO_PID)
+	LinuxToPidReceiver(const LinuxSensorToPidConfig& config) : key(ftok(config.pathname.c_str(), config.proj_id)), expected_msg_type(PocMsgTypes::SENSOR_TO_PID)
 	{}
 	
 	err_t receive(SensorData& data) override

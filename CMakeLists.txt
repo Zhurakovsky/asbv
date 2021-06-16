@@ -11,6 +11,11 @@ add_subdirectory(sensor)
 add_subdirectory(pid)
 add_subdirectory(actuator)
 
-add_executable(AutosarPocApp main.cpp)
+add_executable(AutosarPocApp
+    main.cpp
+    config_parser.cpp
+    config_parser.hpp
+    ${COMMON_HEADERS_DIRECTORY}/types.hpp
+)
 
 target_include_directories(AutosarPocApp PRIVATE ${COMMON_HEADERS_DIRECTORY})

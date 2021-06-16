@@ -20,14 +20,14 @@ struct PidToLinuxSenderConfig
 class IPidToActuatorSender
 {
 public:
-    virtual ~IPidToActuatorSender() {};
+    virtual ~IPidToActuatorSender() = default;
     virtual err_t send(const ActuatorData& data) = 0;
 };
 
 class PidToLinuxSender : public IPidToActuatorSender
 {
 public:
-    PidToLinuxSender(const PidToLinuxSenderConfig& config) : key(ftok(config.pathname.c_str(), config.proj_id)), msgid(msgget(key, 0666 | IPC_CREAT))
+    PidToLinuxSender(const LinuxPidToActuatorConfig& config) : key(ftok(config.pathname.c_str(), config.proj_id)), msgid(msgget(key, 0666 | IPC_CREAT))
     {}
 
     err_t send(const ActuatorData& data)

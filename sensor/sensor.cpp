@@ -1,65 +1,69 @@
 #include <unistd.h>
 #include <stdlib.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
-
 #include <iostream>
+#include <memory>
 
-#include "msg_types.hpp"
+#include "types.hpp"
 #include "sensors.hpp"
 #include "sensortopidsenders.hpp"
+#include "config_mgmt.hpp"
 
 using namespace std;
 using namespace poc_autosar;
 
+err_t parse_cmdline(int argc, char** argv, SensorSwcConfigType &config)
+{
+    CmdLineArgsParser parser(argc, argv);
+
+    if (parser.config_get<bool>("TYPE_RANDOM"s))
+        config.sensor = Sensor::RANDOM_SENSOR;
+    else if (parser.config_get<bool>("TYPE_CARLA"s))
+        config.sensor = Sensor::CARLA_SENSOR;
+    else if (parser.config_get<bool>("TYPE_I2C"s))
+        config.sensor = Sensor::I2C_SENSOR;
+    else if (parser.config_get<bool>("TYPE_CAN"s))
+        config.sensor = Sensor::CAN_SENSOR;
+
+    config.socket_sensor.port = parser.config_get<int>("SOCKET_PORT"s);
+    config.socket_sensor.addr = parser.config_get<string>("SOCKET_ADDR"s);
+
+    if (parser.config_get<bool>("SENSOR_TO_PID_LINUX"s))
+        config.sensor_to_pid_sender = SensorToPid::LINUX_SENSOR_TO_PID;
+    if (parser.config_get<bool>("SENSOR_TO_PID_CAN"s))
+        config.sensor_to_pid_sender = SensorToPid::CAN_SENSOR_TO_PID;
+
+    config.linux_sender_to_pid.pathname = parser.config_get<string>("SENSOR_TO_PID_LINUX_PATHNAME"s);
+    config.linux_sender_to_pid.proj_id = parser.config_get<int>("SENSOR_TO_PID_LINUX_PROJID"s);
+
+    return RC_SUCCESS;
+}
+
 int main(int argc, char** argv)
 {
-    int status;
-    char* args[2];
-    string child_app = "./pidControllerApp";
-    args[0] = (char*)child_app.c_str();
-    
-    args[1] = NULL;
+    SensorSwcConfigType sensor_config;
+    parse_cmdline(argc, argv, sensor_config);
 
-    key_t key;
-    int msgid;
+    std::unique_ptr<ISensorToPidSender> sender(nullptr);
+    std::unique_ptr<ISensor> sensor(nullptr);
 
-    pid_t pid = fork();
-    
-    switch(pid)
+    if (sensor_config.sensor_to_pid_sender == SensorToPid::LINUX_SENSOR_TO_PID)
+        sender.reset(new LinuxToPidSender(sensor_config.linux_sender_to_pid));
+
+    if (sensor_config.sensor == Sensor::RANDOM_SENSOR)
+        sensor.reset(new RandomSensor());
+
+    SensorData data;
+
+    while (true)
     {
-        case -1:
-        perror("Sensor fork");
-        break;
+        if (sensor) 
+            if (sensor->read(data) != RC_SUCCESS)
+                continue;
 
-        case 0:
-        if ((execvp (args[0], args)) == -1 )
-        {
-            perror("execvp");
-        }
-        break;
+        if (sender)
+            sender->send(data);
 
-        default:
-        {
-            SensorData data;
-            LinuxToPidSenderConfig sender_config =  {.pathname = "autosar_poc", .proj_id = 42 };
-            ISensorToPidSender *sender = new LinuxToPidSender(sender_config);
-            ISensor *sensor = new RandomSensor();
-
-            while (true)
-            {
-                if (sensor->read(&data) != RC_SUCCESS) {
-                    continue;
-                }
-                sender->send(&data);
-
-                sleep(1);
-            }
-            wait(0);
-        }
+        sleep(1);
     }
-
     return 0;
 }
