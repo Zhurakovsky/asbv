@@ -3,7 +3,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
-#include "config_parser.hpp"
+#include "config_parser/config_parser.hpp"
 #include "common/include/types.hpp"
 
 #include <iostream>
@@ -32,11 +32,15 @@ int run_child_proc(string proc_name, std::vector<std::string> args_v)
     char *args[MAX_CHILD_ARGS];
 
     if (args_v.size() > MAX_CHILD_ARGS)
+    {
         return -1;
+    }
 
     for (int i = 0; i < args_v.size(); i++)
+    {
         args[i + 1] = const_cast<char*>(args_v[i].c_str());
-    
+    }
+
     args[0] = const_cast<char*>(proc_name.c_str());
     args[args_v.size() + 1] = NULL;
 

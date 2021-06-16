@@ -17,7 +17,7 @@ class ISensorToPidSender
 public:
     virtual ~ISensorToPidSender() = default;
     virtual const std::string describe() = 0;
-    virtual err_t send(SensorData &data) = 0;
+    virtual err_t send(const SensorData& data) = 0;
 };
 
 class LinuxToPidSender : public ISensorToPidSender
@@ -32,15 +32,16 @@ public:
 
     const std::string describe() override { return "MsgQueue"; };
 
-    err_t send(SensorData &data) override
+    err_t send(const SensorData& data) override
     {
-        message.msg_type = PocMsgTypes::SENSOR_TO_PID;
-        message.sensor_data.linear_speed = data.linear_speed;
-        message.sensor_data.roll_accelleration = data.roll_accelleration;
-        message.sensor_data.roll_angle = data.roll_angle;
+        message.msg_type                        = PocMsgTypes::SENSOR_TO_PID;
+        message.sensor_data.linear_speed        = data.linear_speed;
+        message.sensor_data.roll_accelleration  = data.roll_accelleration;
+        message.sensor_data.roll_angle          = data.roll_angle;
 
         return msgsnd(this->msgid, &message, sizeof(message), 0) ? RC_FAIL : RC_SUCCESS;
     };
+
 private:
     key_t key;
     int msgid;
