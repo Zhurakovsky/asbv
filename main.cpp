@@ -1,11 +1,13 @@
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 
 #include "config_parser/config_parser.hpp"
 #include "common/include/types.hpp"
 
+#include <fstream>
 #include <iostream>
 #include <csignal>
 
@@ -25,6 +27,12 @@ void signalHandler( int signum )
     }
 
     exit(signum);  
+}
+
+bool is_file_exist(const char *fileName)
+{
+    std::ifstream infile(fileName);
+    return infile.good();
 }
 
 int run_child_proc(string proc_name, std::vector<std::string> args_v)
@@ -48,7 +56,7 @@ int run_child_proc(string proc_name, std::vector<std::string> args_v)
     switch(pid)
     {
         case -1:
-            perror("Scanner fork");
+            perror("fork error");
             break;
         case 0:
             if ((execvp (args[0], args)) == -1 )
@@ -61,11 +69,37 @@ int run_child_proc(string proc_name, std::vector<std::string> args_v)
     return pid;
 }
 
+void print_help_message()
+{
+    cout << "AutosarPocApp - Self-Balancing vehicle robotics motorcycle POC" << endl << \
+    "Usage: ./AutosarPocApp [configFile]" << endl;
+
+}
+
 int main(int argc, char** argv)
 {
     signal(SIGINT, signalHandler);
 
-    ConfigParser cfg("config"s);
+    if (argc != 2)
+    {
+        cout << "Error parsing arguments" << endl;
+        print_help_message();
+        return -1;
+    } else
+    {
+        if (strlen(argv[1]) == 2 && strstr(argv[1], "-h") == argv[1])
+        {
+            print_help_message();
+            return 0;
+        }
+        else if (!is_file_exist(argv[1]))
+        {
+            cout << "config file " << argv[1] << " is not exist" << endl;;
+            return -1;
+        }
+    }
+
+    ConfigParser cfg(argv[1]);
     cfg.parse_config();
 
     child_pids[0] = run_child_proc("./pidControllerApp"s, cfg.get_pid_config_line());
