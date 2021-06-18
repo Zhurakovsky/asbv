@@ -19,7 +19,7 @@ Sensor SWC, Controller SWC, Actuators SCW that works together to establish self-
 
 
 **How to run**
-Run ./AutosarPocApp to start all three components on the Raspberry Pi platform.
+Run ./AutosarPocApp \[configFile\] to start all three components on the Raspberry Pi platform.
 
 **Additional info**
 Example of Message Queue taken from here:
