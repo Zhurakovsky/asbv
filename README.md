@@ -33,3 +33,6 @@ rsync -vR --progress -rl --delete-after --safe-links autosar@192.168.1.103:/{lib
 rsync -r asbv/ autosar@192.168.1.103:~/AUTOSAR_POC/asbv
 
 sudo i2cdetect -y 1
+
+
+rsync -r pi@192.168.1.103:~/MY_APPS/wiringpi_pwm/ .

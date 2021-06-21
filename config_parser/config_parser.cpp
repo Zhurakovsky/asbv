@@ -95,6 +95,7 @@ std::vector<std::string> ConfigParser::get_config_line(config_type type)
     if (!this->is_config_parsed)
         return ret;
 
+
     for (const auto& [key, val] : this->parsed_config[type])
     {
         if (val == "y")

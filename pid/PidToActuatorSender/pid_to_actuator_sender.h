@@ -33,7 +33,7 @@ public:
     err_t send(const ActuatorData& data)
     {
         message.msg_type = PocMsgTypes::PID_TO_ACTUATOR;
-        message.actuator_data.steer_ange = data.steer_ange;
+        message.actuator_data.steer_angle = data.steer_angle;
         message.actuator_data.request_to_steer = data.request_to_steer;
 
         return msgsnd(msgid, &message, sizeof(message), 0) ? RC_FAIL : RC_SUCCESS;

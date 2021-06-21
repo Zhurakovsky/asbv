@@ -23,34 +23,55 @@ public:
 class StdoutActuator : public IActuator
 {
 public:
-    virtual const std::string describe() override { return "Bypass"; };
+    virtual const std::string describe() override { return "Bypass"; }
     err_t write(const ActuatorData &data) override
     {
-        std::cout <<  "ACTUATOR: RTS: " << (data.request_to_steer ? "Yes" : "No") ;
-        std::cout << " Steer angle: " << data.steer_ange << std::endl;
+        static const float min_jaw = -55.0;
+        static float max_jaw = 55.0;
+        static float step = 9.16;
+        static int half_range = 6;
+
+        float current_intensity;
+        float absolute_jaw;
+        float desired_jaw = data.steer_angle;
+
+        if (desired_jaw < (min_jaw))
+        {
+            desired_jaw = (min_jaw);
+            absolute_jaw = std::fabs(desired_jaw - (min_jaw));
+        }
+        else if (desired_jaw < 0.0)
+        {
+            absolute_jaw = std::fabs(min_jaw) - std::fabs(desired_jaw);
+        }
+        else if (desired_jaw > max_jaw)
+        {
+            desired_jaw = max_jaw;
+            absolute_jaw = desired_jaw + max_jaw;
+        }
+        else
+        {
+            absolute_jaw = desired_jaw + max_jaw;
+        }
+
+        current_intensity = std::ceil((absolute_jaw / step)) + half_range; 
+
         return RC_SUCCESS;
-    };
+    }
 };
 
 
 class CarlaActuator : public IActuator
 {
-    virtual const std::string describe() override { return "Carla"; };
-    err_t write(const ActuatorData &data) override { return RC_NOT_IMPLEMENTED; };
-};
-
-
-class RaspberryActuator : public IActuator
-{
-    virtual const std::string describe() override { return "Raspberry"; };
-    err_t write(const ActuatorData &data) override { return RC_NOT_IMPLEMENTED; };
+    virtual const std::string describe() override { return "Carla"; }
+    err_t write(const ActuatorData &data) override { return RC_NOT_IMPLEMENTED; }
 };
 
 
 class AutosarActuator : public IActuator
 {
-    virtual const std::string describe() override { return "Autosar"; };
-    err_t write(const ActuatorData &data) override { return RC_NOT_IMPLEMENTED; };
+    virtual const std::string describe() override { return "Autosar"; }
+    err_t write(const ActuatorData &data) override { return RC_NOT_IMPLEMENTED; }
 };
 
 }

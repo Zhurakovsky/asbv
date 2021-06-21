@@ -23,7 +23,7 @@ public:
 class LinuxToPidSender : public ISensorToPidSender
 {
 public:
-    LinuxToPidSender(const LinuxSensorToPidConfig config)
+    LinuxToPidSender(const LinuxSensorToPidConfig& config)
     {
         this->key = ftok(config.pathname.c_str(), config.proj_id);
         this->msgid = msgget(key, 0666 | IPC_CREAT);

@@ -75,7 +75,8 @@ err_t RaspiSensor::read(SensorData& data)
     acclZ_scaled = acclZ / 16384.0;
 
     data.roll_accelleration = acclX_scaled;
-    data.roll_angle = get_x_rotation(acclX_scaled, acclY_scaled, acclZ_scaled);
+    float tmp_roll_angle = get_x_rotation(acclX_scaled, acclY_scaled, acclZ_scaled);
+    data.roll_angle = round( tmp_roll_angle * 1000.0 ) / 1000.0;
     //cout << "Roll Acceleration = " << acclX_scaled << ", Roll Angle = " << data.roll_angle << endl;
     data.linear_speed = 0.0;
 
