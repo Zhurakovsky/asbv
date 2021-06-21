@@ -19,4 +19,5 @@ make -j
 
 if [ ! -f config ]; then
 	cp $DIR/config config
+	cp $DIR/config_raspi config_raspi
 fi

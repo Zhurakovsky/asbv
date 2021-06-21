@@ -17,7 +17,8 @@ enum class Sensor : uint8_t
     RANDOM_SENSOR,
     CARLA_SENSOR,
     I2C_SENSOR,
-    CAN_SENSOR
+    CAN_SENSOR,
+    STATIC_SENSOR
 };
 
 enum class SensorToPid : uint8_t
@@ -58,10 +59,18 @@ struct SocketSensorConfig
     uint32_t port;
 };
 
+struct StaticSensorConfig
+{
+    float roll;
+    float acc;
+    float speed;
+};
+
 struct SensorSwcConfigType
 {
     Sensor sensor{Sensor::UNDEFINED_SENSOR};
     SocketSensorConfig socket_sensor;
+    StaticSensorConfig static_sensor;
     SensorToPid sensor_to_pid_sender{SensorToPid::UNDEFINED_SENSOR_TO_PID};
     LinuxSensorToPidConfig linux_sender_to_pid;
 };

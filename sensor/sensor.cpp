@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <iostream>
 #include <memory>
+#include <chrono>
+#include <thread>
+#include <cmath>
+#include <string>
 
 #include "types.hpp"
 #include "sensors.hpp"
@@ -11,6 +15,7 @@
 
 using namespace std;
 using namespace poc_autosar;
+using namespace std::chrono_literals;
 
 err_t parse_cmdline(int argc, char** argv, SensorSwcConfigType &config)
 {
@@ -32,8 +37,26 @@ err_t parse_cmdline(int argc, char** argv, SensorSwcConfigType &config)
     {
         config.sensor = Sensor::CAN_SENSOR;
     }
+    else if (parser.config_get<bool>("TYPE_STATIC"s))
+    {
+        config.sensor = Sensor::STATIC_SENSOR;
+    }
     config.socket_sensor.port = parser.config_get<int>("SOCKET_PORT"s);
     config.socket_sensor.addr = parser.config_get<string>("SOCKET_ADDR"s);
+
+    std::string string_roll = parser.config_get<string>("STATIC_ROLL_VALUE"s);
+    string_roll = string_roll.substr(string_roll.find("=") + 1); 
+    
+    std::string string_acc = parser.config_get<string>("STATIC_ACC_VALUE"s);
+    string_acc = string_acc.substr(string_acc.find("=") + 1);
+    
+    std::string string_speed = parser.config_get<string>("STATIC_SPEED_VALUE"s);
+    string_speed = string_speed.substr(string_speed.find("=") + 1);
+
+    config.static_sensor.roll = std::stof(string_roll); 
+    config.static_sensor.acc = std::stof(string_acc);
+    config.static_sensor.speed = std::stof(string_speed);
+
 
     if (parser.config_get<bool>("SENSOR_TO_PID_LINUX"s))
     {
@@ -68,7 +91,6 @@ int main(int argc, char** argv)
         default:
             break;
     }
-        
 
     switch (sensor_config.sensor)
     {
@@ -77,7 +99,6 @@ int main(int argc, char** argv)
             break;
 
         case Sensor::I2C_SENSOR:
-
         #ifdef _WIRINGPI
             sensor.reset(new RaspiSensor);
         #else
@@ -86,10 +107,15 @@ int main(int argc, char** argv)
         #endif //_WIRINGPI
             break;
 
+        case Sensor::STATIC_SENSOR:
+            std::cout << "STATIC_SENSOR PARSED" << std::endl;
+            sensor.reset(new StaticSensor(sensor_config.static_sensor));
+            break;
+
         default:
+            std::cout << "NO SENSOR PARSED" << std::endl;
             break;
     }
-        
 
     SensorData data;
 
@@ -108,7 +134,7 @@ int main(int argc, char** argv)
             sender->send(data);
         }
         
-        sleep(1);
+        std::this_thread::sleep_for(50ms);
     }
     return 0;
 }

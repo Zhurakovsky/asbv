@@ -3,15 +3,18 @@
 
 #include <iostream>
 #include <memory>
+#include <thread>
+#include <chrono>
 
 #include "types.hpp"
 #include "actuators.hpp"
+#include "raspi_actuator.hpp"
 #include "pidtoactuatorreceivers.hpp"
 #include "config_mgmt.hpp"
 
 using namespace std;
 using namespace poc_autosar;
-
+using namespace std::chrono_literals;
 
 err_t parse_cmdline(int argc, char** argv, ActuatorSwcConfigType &config)
 {
@@ -46,23 +49,39 @@ int main(int argc, char** argv)
     std::unique_ptr<IActuator> actuator(nullptr);
 
     if (actuator_config.pid_to_actuator_receiver == PidToActuator::LINUX_PID_TO_ACTUATOR)
+    {
         receiver.reset(new LinuxToActuatorReceiver(actuator_config.linux_pid_to_actuator));
+    }
     
-    if (actuator_config.actuator == Actuator::STDOUT_ACTUATOR)
-        actuator.reset(new StdoutActuator());
-
+    switch(actuator_config.actuator)
+    {
+        case Actuator::STDOUT_ACTUATOR:
+            actuator.reset(new StdoutActuator());
+            break;
+        case Actuator::PWM_ACTUATOR:
+            actuator.reset(new RaspiActuator());
+            break;
+        default:
+            break;
+    }
+    
     ActuatorData data = {0};
 
     while(true)
     {
         if (receiver)
+        {
             if (receiver->receive(data) != RC_SUCCESS)
+            {
                 continue;
+            }
+        }
 
         if (actuator)
+        {
             actuator->write(data);
-
-        sleep(1);
+        }
+        std::this_thread::sleep_for(50ms);
     }
     return 0;
 }

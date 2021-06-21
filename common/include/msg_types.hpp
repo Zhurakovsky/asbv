@@ -27,7 +27,7 @@ struct MsgSensorToPid
 
 struct ActuatorData
 {
-    float steer_ange;           // degree
+    float steer_angle;           // degree
     bool request_to_steer;      // for speed around zero should be true
 };
 

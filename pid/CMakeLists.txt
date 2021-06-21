@@ -8,6 +8,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(COMMON_HEADERS_DIRECTORY ${COMMON_HEADERS_DIRECTORY}  PARENT_SCOPE)
 
+find_package(Threads)
+
 add_executable(pidControllerApp pid.cpp 
                                 pid_controller.hpp 
                                 pid_controller.cpp 
@@ -17,6 +19,8 @@ add_executable(pidControllerApp pid.cpp
                                 SensorToPidReceiver/sensor_to_pid_receiver.h
                                 PidToActuatorSender/pid_to_actuator_sender.h
 )
+
+target_link_libraries(pidControllerApp Threads::Threads)
 
 target_include_directories(pidControllerApp PRIVATE ${COMMON_HEADERS_DIRECTORY})
 
