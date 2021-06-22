@@ -32,7 +32,7 @@ public:
             });
             if (match != arguments.cend())
             {
-                return  atoi((*match).c_str());
+                return  std::atoi(getVal(*match).c_str());
             }
         }
         else if constexpr (std::is_same_v<T, std::string>)
@@ -42,7 +42,17 @@ public:
             });
             if (match != arguments.cend())
             {
-                return *match;
+                return getVal(*match);
+            }
+        }
+        else if constexpr (std::is_same_v<T, float>)
+        {
+            auto match = std::find_if(arguments.cbegin(), arguments.cend(), [&requested_arg] (const std::string& s) {
+                return s.find(requested_arg) == 0;
+            });
+            if (match != arguments.cend())
+            {
+                return std::stof(getVal(*match));
             }
         }
         /* Below code shouldn't be executed. Adde Only to avoid warninigs */
@@ -51,6 +61,10 @@ public:
 
 private:
     std::list<std::string> arguments;
+    std::string getVal(std::string cfgLine)
+    {
+        return cfgLine.substr(cfgLine.find("=") + 1);
+    }
 };
 
 };
