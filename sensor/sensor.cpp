@@ -44,19 +44,9 @@ err_t parse_cmdline(int argc, char** argv, SensorSwcConfigType &config)
     config.socket_sensor.port = parser.config_get<int>("SOCKET_PORT"s);
     config.socket_sensor.addr = parser.config_get<string>("SOCKET_ADDR"s);
 
-    std::string string_roll = parser.config_get<string>("STATIC_ROLL_VALUE"s);
-    string_roll = string_roll.substr(string_roll.find("=") + 1); 
-    
-    std::string string_acc = parser.config_get<string>("STATIC_ACC_VALUE"s);
-    string_acc = string_acc.substr(string_acc.find("=") + 1);
-    
-    std::string string_speed = parser.config_get<string>("STATIC_SPEED_VALUE"s);
-    string_speed = string_speed.substr(string_speed.find("=") + 1);
-
-    config.static_sensor.roll = std::stof(string_roll); 
-    config.static_sensor.acc = std::stof(string_acc);
-    config.static_sensor.speed = std::stof(string_speed);
-
+    config.static_sensor.roll = parser.config_get<float>("STATIC_ROLL_VALUE"s);
+    config.static_sensor.acc = parser.config_get<float>("STATIC_ACC_VALUE"s);
+    config.static_sensor.speed = parser.config_get<float>("STATIC_SPEED_VALUE"s);
 
     if (parser.config_get<bool>("SENSOR_TO_PID_LINUX"s))
     {
