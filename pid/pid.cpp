@@ -26,14 +26,22 @@ err_t parse_cmdline(int argc, char** argv, PidSwcConfigType &config)
     CmdLineArgsParser parser(argc, argv);
 
     if (parser.config_get<bool>("PID_TO_ACTUATOR_LINUX"s))
+    {
         config.pid_to_actuator_sender = PidToActuator::LINUX_PID_TO_ACTUATOR;
+    }
     if (parser.config_get<bool>("PID_TO_ACTUATOR_CAN"s))
+    {
         config.pid_to_actuator_sender = PidToActuator::CAN_PID_TO_ACTUATOR;
+    }
 
     if (parser.config_get<bool>("SENSOR_TO_PID_LINUX"s))
+    {
         config.sensor_to_pid_receiver = SensorToPid::LINUX_SENSOR_TO_PID;
+    }
     if (parser.config_get<bool>("SENSOR_TO_PID_CAN"s))
+    {
         config.sensor_to_pid_receiver = SensorToPid::CAN_SENSOR_TO_PID;
+    }
 
     config.linux_pid_to_actuator.pathname = parser.config_get<string>("SENSOR_TO_PID_LINUX_PATHNAME"s);
     config.linux_pid_to_actuator.proj_id = parser.config_get<int>("SENSOR_TO_PID_LINUX_PROJID"s);

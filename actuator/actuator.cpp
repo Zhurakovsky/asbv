@@ -22,18 +22,30 @@ err_t parse_cmdline(int argc, char** argv, ActuatorSwcConfigType &config)
     CmdLineArgsParser parser(argc, argv);
 
     if (parser.config_get<bool>("TYPE_STDOUT"s))
+    {
         config.actuator = Actuator::STDOUT_ACTUATOR;
+    }
     else if (parser.config_get<bool>("TYPE_CARLA"s))
+    {
         config.actuator = Actuator::CARLA_ACTUATOR;
+    }
     else if (parser.config_get<bool>("TYPE_PWM"s))
+    {
         config.actuator = Actuator::PWM_ACTUATOR;
+    }
     else if (parser.config_get<bool>("TYPE_CAN"s))
+    {
         config.actuator = Actuator::CAN_ACTUATOR;
+    }
 
     if (parser.config_get<bool>("PID_TO_ACTUATOR_LINUX"s))
+    {
         config.pid_to_actuator_receiver = PidToActuator::LINUX_PID_TO_ACTUATOR;
+    }
     if (parser.config_get<bool>("PID_TO_ACTUATOR_CAN"s))
+    {
         config.pid_to_actuator_receiver = PidToActuator::CAN_PID_TO_ACTUATOR;
+    }
 
     config.linux_pid_to_actuator.pathname = parser.config_get<string>("PID_TO_ACTUATOR_LINUX_PATHNAME"s);
     config.linux_pid_to_actuator.proj_id = parser.config_get<int>("PID_TO_ACTUATOR_LINUX_PROJID"s);

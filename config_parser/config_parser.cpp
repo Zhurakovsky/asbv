@@ -39,19 +39,27 @@ err_t ConfigParser::print_parsed_config()
 {
     cout << "Common configuration" << endl;
     for (const auto& [key, val] : this->parsed_config[CONFIG_COMMON])
+    {
         cout << key << " | " << val << endl;
+    }
 
     cout << endl << "Sensor configuration" << endl;
     for (const auto& [key, val] : this->parsed_config[CONFIG_SENSOR])
+    {
         cout << key << " | " << val << endl;
+    }
 
     cout << endl << "Pid configuration" << endl;
     for (const auto& [key, val] : this->parsed_config[CONFIG_PID])
+    {
         cout << key << " | " << val << endl;
+    }
 
     cout << endl << "Actuator configuration" << endl;
     for (const auto& [key, val] : this->parsed_config[CONFIG_ACTUATOR])
+    {
         cout << key << " | " << val << endl << endl;
+    }
 
     return RC_SUCCESS;
 }
@@ -65,21 +73,35 @@ err_t ConfigParser::parse_config()
     while (getline(configfile, line))
     {
         if (line.length() <= 1)
+        {
             continue;
+        }
         if (line[0] == '#')
+        {
             continue;
+        }
         else if (line.find("[common]") != string::npos)
+        {
             current_secton = &(this->parsed_config[CONFIG_COMMON]);
+        }
         else if (line.find("[sensor]") != string::npos)
+        {
             current_secton = &(this->parsed_config[CONFIG_SENSOR]);
+        }
         else if (line.find("[actuator]") != string::npos)
+        {
             current_secton = &(this->parsed_config[CONFIG_ACTUATOR]);
+        }
         else if (line.find("[pid]") != string::npos)
+        {
             current_secton = &(this->parsed_config[CONFIG_PID]);
+        }
         else
         {
             if (!current_secton)
+            {
                 return RC_FAIL;
+            }
             string key = trim(line.substr(0, line.find("=")));
             string value = trim(line.substr(line.find("=") + 1));
             current_secton->insert({key, value});
@@ -93,15 +115,20 @@ std::vector<std::string> ConfigParser::get_config_line(config_type type)
 {
     std::vector<std::string> ret;
     if (!this->is_config_parsed)
+    {
         return ret;
-
+    }
 
     for (const auto& [key, val] : this->parsed_config[type])
     {
         if (val == "y")
+        {
             ret.push_back("+" + key);
+        }
         else
+        {
             ret.push_back(key + "=" + val);
+        }
     }
 
     return ret;
@@ -111,6 +138,7 @@ std::vector<std::string> ConfigParser::get_sensor_config_line()
 {
     return get_config_line(CONFIG_SENSOR);
 }
+
 std::vector<std::string> ConfigParser::get_pid_config_line()
 {
     return get_config_line(CONFIG_PID);

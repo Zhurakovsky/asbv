@@ -85,7 +85,8 @@ int main(int argc, char** argv)
         cout << "Error parsing arguments" << endl;
         print_help_message();
         return -1;
-    } else
+    }
+    else
     {
         if (strlen(argv[1]) == 2 && strstr(argv[1], "-h") == argv[1])
         {
