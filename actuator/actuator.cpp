@@ -88,7 +88,7 @@ int main(int argc, char** argv)
         {
             actuator->write(data);
         }
-        std::this_thread::sleep_for(50ms);
+        std::this_thread::sleep_for(10ms);
     }
     return 0;
 }

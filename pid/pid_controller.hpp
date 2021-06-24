@@ -2,6 +2,7 @@
 #define PID_PID_CONTROLLER_HPP
 
 #include "msg_types.hpp"
+#include "types.hpp"
 #include <chrono>
 #include <limits>
 
@@ -11,9 +12,8 @@ namespace poc_autosar
 class PidController
 {
     public:
-        PidController();
+        PidController(const PidControllerConfig& pid_config);
         ~PidController() = default;
-
         PidController(const PidController&) = delete;
         PidController(PidController&&) = delete;
         PidController& operator = (const PidController&) = delete;
@@ -22,7 +22,6 @@ class PidController
         bool calculateActuatorValues(const SensorData& sensor_data, ActuatorData& actuator_data);
 
     private:
-
         void init_pid_controller();
         
         float roll_reference = 0.0; // Expected roll angle. Negative roll means roll left, positive means roll right
@@ -36,6 +35,10 @@ class PidController
         float integral = 0.0;
         float windup = 5.0;
         std::chrono::high_resolution_clock::time_point prev_time;
+
+        const float kp{0.0}; // = 1.5;   // Proportional coef.
+        const float ki{0.0}; // = 0.25;  // Integral coef.
+        const float kd{0.0}; // = 2.5;   // Derivative coef.
 };
 
 }

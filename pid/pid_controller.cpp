@@ -4,17 +4,12 @@ using namespace std;
 using namespace poc_autosar;
 using namespace std::chrono_literals;
 
-namespace
-{
-    const float kp = 1.5;   // Proportional coef.
-    const float ki = 0.25;  // Integral coef.
-    const float kd = 2.5;   // Derivative coef.
-}
 
-PidController::PidController()
+PidController::PidController(const PidControllerConfig& pid_config) : kp(pid_config.kp), ki(pid_config.ki), kd(pid_config.kd)
 {
     init_pid_controller();
 }
+
 
 void PidController::init_pid_controller()
 {
@@ -25,7 +20,7 @@ void PidController::init_pid_controller()
 {
     auto call_time = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = call_time-prev_time;
-    if (elapsed.count() < 50)
+    if (elapsed.count() < 10)
     {
         actuator_data.steer_angle = jaw_output;
         actuator_data.request_to_steer = true;
