@@ -21,12 +21,15 @@ add_executable(sensorApp
     sensor.cpp
     sensors.hpp
     sensortopidsenders.hpp
+    socketSensor.cpp
+    socketSensor.hpp
     raspi_sensor.hpp
     raspi_sensor.cpp
     ${COMMON_HEADERS_DIRECTORY}/msg_types.hpp
     ${COMMON_HEADERS_DIRECTORY}/types.hpp
     ${COMMON_HEADERS_DIRECTORY}/config_mgmt.hpp
-)
+    ${COMMON_HEADERS_DIRECTORY}/socketWrappers.cpp
+    ${COMMON_HEADERS_DIRECTORY}/socketWrappers.hpp)
 
 target_include_directories(sensorApp PUBLIC ${COMMON_HEADERS_DIRECTORY})
 
@@ -36,7 +39,6 @@ if(WIRINGPI_LIBRARIES)
     ADD_DEFINITIONS( -D_WIRINGPI=\"1\")
 endif()
 endif()
-
 
 target_link_libraries(sensorApp ${CMAKE_THREAD_LIBS_INIT})
 

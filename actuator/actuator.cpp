@@ -11,6 +11,7 @@
 #include "raspi_actuator.hpp"
 #include "pidtoactuatorreceivers.hpp"
 #include "config_mgmt.hpp"
+#include "socketActuator.hpp"
 
 using namespace std;
 using namespace poc_autosar;
@@ -37,6 +38,9 @@ err_t parse_cmdline(int argc, char** argv, ActuatorSwcConfigType &config)
     config.linux_pid_to_actuator.pathname = parser.config_get<string>("PID_TO_ACTUATOR_LINUX_PATHNAME"s);
     config.linux_pid_to_actuator.proj_id = parser.config_get<int>("PID_TO_ACTUATOR_LINUX_PROJID"s);
 
+    config.socket_actuator.port = parser.config_get<int>("SOCKET_PORT"s);
+    config.socket_actuator.addr = parser.config_get<string>("SOCKET_ADDR"s);
+
     return RC_SUCCESS;
 }
 
@@ -57,6 +61,9 @@ int main(int argc, char** argv)
     {
         case Actuator::STDOUT_ACTUATOR:
             actuator.reset(new StdoutActuator());
+            break;
+        case Actuator::CARLA_ACTUATOR:
+            actuator.reset(new SocketActuator(actuator_config.socket_actuator));
             break;
         case Actuator::PWM_ACTUATOR:
             actuator.reset(new RaspiActuator());

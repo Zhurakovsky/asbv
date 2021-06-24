@@ -31,14 +31,6 @@ public:
     }
 };
 
-
-class CarlaSensor : public ISensor {
-public:
-    virtual const std::string describe() const { return "Carla"; }
-    err_t read(SensorData& data) override {return RC_NOT_IMPLEMENTED; }
-};
-
-
 class AutosarSensor : public ISensor {
 public:
     virtual const std::string describe() const { return "Autosar"; }
