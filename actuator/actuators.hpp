@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <iomanip>
 
 #include "msg_types.hpp"
 #include "types.hpp"
@@ -54,7 +55,9 @@ public:
             absolute_jaw = desired_jaw + max_jaw;
         }
 
-        current_intensity = std::ceil((absolute_jaw / step)) + half_range; 
+        current_intensity = std::ceil((absolute_jaw / step)) + half_range;
+
+        std::cout << std::setw(10) << "Desired jaw: " << desired_jaw << ", ABS angle: " << absolute_jaw << ", PWM Pulses: " << current_intensity << std::endl; 
 
         return RC_SUCCESS;
     }

@@ -74,12 +74,20 @@ struct SensorSwcConfigType
     LinuxSensorToPidConfig linux_sender_to_pid;
 };
 
+struct PidControllerConfig
+{
+    float kp; // Proportional coef.
+    float ki; // Integral coef.
+    float kd; // Derivative coef.
+};
+
 struct PidSwcConfigType
 {
     SensorToPid sensor_to_pid_receiver{SensorToPid::UNDEFINED_SENSOR_TO_PID};
     PidToActuator pid_to_actuator_sender{PidToActuator::UNDEFINED_PID_TO_ACTUATOR};
     LinuxSensorToPidConfig linux_sender_to_pid;
     LinuxPidToActuatorConfig linux_pid_to_actuator;
+    PidControllerConfig pid_config;
 };
 
 struct SocketActuatorConfig
