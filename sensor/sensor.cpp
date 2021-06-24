@@ -12,6 +12,7 @@
 #include "sensortopidsenders.hpp"
 #include "config_mgmt.hpp"
 #include "raspi_sensor.hpp"
+#include "socketSensor.hpp"
 
 using namespace std;
 using namespace poc_autosar;
@@ -42,7 +43,6 @@ err_t parse_cmdline(int argc, char** argv, SensorSwcConfigType &config)
         config.sensor = Sensor::STATIC_SENSOR;
     }
     config.socket_sensor.port = parser.config_get<int>("SOCKET_PORT"s);
-    config.socket_sensor.addr = parser.config_get<string>("SOCKET_ADDR"s);
 
     config.static_sensor.roll = parser.config_get<float>("STATIC_ROLL_VALUE"s);
     config.static_sensor.acc = parser.config_get<float>("STATIC_ACC_VALUE"s);
@@ -102,6 +102,10 @@ int main(int argc, char** argv)
             sensor.reset(new StaticSensor(sensor_config.static_sensor));
             break;
 
+        case Sensor::CARLA_SENSOR:
+            std::cout << "CARLA_SENSOR PARSED" << std::endl;
+            sensor.reset(new SocketSensor(sensor_config.socket_sensor));
+            break;
         default:
             std::cout << "NO SENSOR PARSED" << std::endl;
             break;

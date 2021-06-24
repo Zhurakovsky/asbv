@@ -55,7 +55,6 @@ typedef LinuxMsgQueueConfig LinuxPidToActuatorConfig;
 
 struct SocketSensorConfig
 {
-    std::string addr;
     uint32_t port;
 };
 
@@ -83,10 +82,17 @@ struct PidSwcConfigType
     LinuxPidToActuatorConfig linux_pid_to_actuator;
 };
 
+struct SocketActuatorConfig
+{
+    std::string addr;
+    uint32_t port;
+};
+
 struct ActuatorSwcConfigType
 {
     PidToActuator pid_to_actuator_receiver{PidToActuator::UNDEFINED_PID_TO_ACTUATOR};
     Actuator actuator{Actuator::UNDEFINED_ACTUATOR};
+    SocketActuatorConfig socket_actuator;
     LinuxPidToActuatorConfig linux_pid_to_actuator;
 };
 
@@ -96,7 +102,6 @@ struct CommonSwcConfigType
     PidSwcConfigType pid;
     ActuatorSwcConfigType actuator;
 };
-
 
 }
 

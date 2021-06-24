@@ -61,13 +61,6 @@ public:
 };
 
 
-class CarlaActuator : public IActuator
-{
-    virtual const std::string describe() override { return "Carla"; }
-    err_t write(const ActuatorData &data) override { return RC_NOT_IMPLEMENTED; }
-};
-
-
 class AutosarActuator : public IActuator
 {
     virtual const std::string describe() override { return "Autosar"; }
