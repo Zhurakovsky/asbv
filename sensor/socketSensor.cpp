@@ -4,25 +4,9 @@
 #include "socketWrappers.hpp"
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <string.h>
 
 using namespace poc_autosar;
-
-namespace
-{
-
-double dist(double a, double b)
-{
-    return sqrt((a*a) + (b*b));
-}
-
-double get_x_rotation(double x, double y, double z)
-{
-    double radians;
-    radians = atan2(y, dist(x, z));
-    return (radians * (180.0 / M_PI));
-}
-
-}
 
 SocketSensor::SocketSensor(const SocketSensorConfig& config)
 {
@@ -55,17 +39,26 @@ err_t SocketSensor::read(SensorData& data)
 {
     const size_t msgLen = 512;
     char buf[msgLen];
-    
-    if (SocketWrappers::Read(mFileDescriptor, buf, msgLen))
+    memset(buf, 0, msgLen);
+
+    if (SocketWrappers::Read(mFileDescriptor, buf, msgLen) != RC_FAIL)
     {
-        std::cout << "SENSOR SOCKET READ: " << buf << std::endl;
+        sscanf(buf, R"({"accel": {"x": %f, "y": %f, "z": %f}, "gyro": {"x": %f, "y": %f, "z": %f}, "velocity": {"x": %f, "y": %f, "z": %f}, "timestamp": %f})", &acclX, &acclY, &acclZ, &gyroX, &gyroY, &gyroZ, &veloX, &veloY, &veloZ, &timestamp);
         
-        sscanf(buf, R"({"accel": {"x": %f, "y": %f, "z": %f}, "gyro": {"x": %f, "y": %f, "z": %f}, "velocity": {"x": %f, "y": %f, "z": %f})", &acclX, &acclY, &acclZ, &gyroX, &gyroY, &gyroZ, &veloX, &veloY, &veloZ);
-        
+        if (timestamp == timestampPrev)
+        {
+            timestampPrev = timestamp;
+        }
+
         data.roll_accelleration = acclX;
-        float tmp_roll_angle = get_x_rotation(acclX, acclY, acclZ);
-        data.roll_angle = round( tmp_roll_angle * 1000.0 ) / 1000.0;
         data.linear_speed = 0.0;
+        
+        double radians = gyroX * (timestamp - timestampPrev);
+        double degrees = (radians * (180.0 / M_PI));
+        mAngleCur += degrees;
+        data.roll_angle = mAngleCur;
+        
+        timestampPrev = timestamp;
 
         return RC_SUCCESS;
     }

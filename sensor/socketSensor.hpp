@@ -19,10 +19,13 @@ private:
 	int mHost = 0;
 	int mServer = 0;
 	int mFileDescriptor = 0;
+    float mAngleCur = 0.f;
 
     float acclX, acclY, acclZ;
     float gyroX, gyroY, gyroZ;
     float veloX, veloY, veloZ;
+    float timestampPrev = 0.f;
+    float timestamp = 0.f;
 };
 
 }
