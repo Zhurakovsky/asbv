@@ -45,11 +45,6 @@ err_t SocketSensor::read(SensorData& data)
     {
         sscanf(buf, R"({"accel": {"x": %f, "y": %f, "z": %f}, "gyro": {"x": %f, "y": %f, "z": %f}, "velocity": {"x": %f, "y": %f, "z": %f}, "timestamp": %f})", &acclX, &acclY, &acclZ, &gyroX, &gyroY, &gyroZ, &veloX, &veloY, &veloZ, &timestamp);
         
-        if (timestamp == timestampPrev)
-        {
-            timestampPrev = timestamp;
-        }
-
         data.roll_accelleration = acclX;
         data.linear_speed = 0.0;
         
