@@ -55,6 +55,7 @@ typedef LinuxMsgQueueConfig LinuxPidToActuatorConfig;
 
 struct SocketSensorConfig
 {
+    std::string addr;
     uint32_t port;
 };
 

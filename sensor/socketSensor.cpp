@@ -11,28 +11,26 @@ using namespace poc_autosar;
 SocketSensor::SocketSensor(const SocketSensorConfig& config)
 {
     mHost = config.port;
+    mNetworkAddress = config.addr;
     Init();
 }
 
 void SocketSensor::Init()
 {
-    mServer = SocketWrappers::Socket(AF_INET, SOCK_STREAM, 0);
+    mFileDescriptor = SocketWrappers::Socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in adr = {0};
     adr.sin_family = AF_INET;
     adr.sin_port = htons(mHost);
 
-    SocketWrappers::Bind(mServer, (struct sockaddr*) &adr, sizeof adr);
-    SocketWrappers::Listen(mServer, 1);
-    
-    socklen_t adrlen = sizeof adr;
-    mFileDescriptor = SocketWrappers::Accept(mServer, (struct sockaddr*) &adr, &adrlen);
+    SocketWrappers::Inet_pton(AF_INET, mNetworkAddress.c_str(), &adr.sin_addr);
+
+    SocketWrappers::Connect(mFileDescriptor, (struct sockaddr*) &adr, sizeof adr);
 }
 
 
 SocketSensor::~SocketSensor()
 {
     close(mFileDescriptor);
-    close(mServer);
 }
 
 err_t SocketSensor::read(SensorData& data)

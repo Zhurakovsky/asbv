@@ -17,7 +17,7 @@ public:
 
 private:
 	int mHost = 0;
-	int mServer = 0;
+    std::string mNetworkAddress;
 	int mFileDescriptor = 0;
     float mAngleCur = 0.f;
 
