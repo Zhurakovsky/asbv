@@ -33,8 +33,10 @@ add_executable(sensorApp
     ${COMMON_HEADERS_DIRECTORY}/socketWrappers.hpp
     ${COMMON_HEADERS_DIRECTORY}/log_manager.cpp
     ${COMMON_HEADERS_DIRECTORY}/log_manager.hpp
-)
-
+    kalman_filter/kalman_filter.cpp
+    kalman_filter/kalman_filter.h
+	)
+	
 target_include_directories(sensorApp PUBLIC ${COMMON_HEADERS_DIRECTORY})
 target_include_directories(sensorApp PRIVATE ${CMAKE_SOURCE_DIR}/plotting)
 

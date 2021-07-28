@@ -5,7 +5,7 @@
 #include "types.hpp"
 #include <string>
 #include <cmath>
-#include <iostream>
+#include <iostream> 
 
 namespace poc_autosar
 {
@@ -26,8 +26,8 @@ public:
         data.linear_speed =         get_random();
         data.roll_angle =           get_random();
         data.roll_accelleration =   get_random();
-
-        return RC_SUCCESS;
+        
+        return RC_SUCCESS;        
     }
 };
 
