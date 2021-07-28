@@ -29,7 +29,9 @@ add_executable(sensorApp
     ${COMMON_HEADERS_DIRECTORY}/types.hpp
     ${COMMON_HEADERS_DIRECTORY}/config_mgmt.hpp
     ${COMMON_HEADERS_DIRECTORY}/socketWrappers.cpp
-    ${COMMON_HEADERS_DIRECTORY}/socketWrappers.hpp)
+    ${COMMON_HEADERS_DIRECTORY}/socketWrappers.hpp
+    kalman_filter/kalman_filter.cpp
+    kalman_filter/kalman_filter.h)
 
 target_include_directories(sensorApp PUBLIC ${COMMON_HEADERS_DIRECTORY})
 

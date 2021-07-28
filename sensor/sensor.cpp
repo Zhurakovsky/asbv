@@ -14,6 +14,9 @@
 #include "raspi_sensor.hpp"
 #include "socketSensor.hpp"
 
+#include "kalman_filter/kalman_filter.h"
+//#include <fstream>
+
 using namespace std;
 using namespace poc_autosar;
 using namespace std::chrono_literals;
@@ -114,6 +117,13 @@ int main(int argc, char** argv)
 
     SensorData data;
 
+    Eigen::VectorXd y(1);
+    KalmanFilter kalman_filter;
+    kalman_filter.init();
+
+    //std::ofstream data_file("data3.csv");
+    //std::ofstream filtered_data_file("filtered_data3.csv");
+
     while (true)
     {
         if (sensor)
@@ -122,6 +132,14 @@ int main(int argc, char** argv)
             {
                 continue;
             }
+
+           // data_file << data.roll_angle << std::endl;
+            y << data.roll_angle;
+            kalman_filter.predict();
+            kalman_filter.update(y);
+
+            data.roll_angle = kalman_filter.state().transpose()[0];
+            //filtered_data_file << data.roll_angle << std::endl;
         }
 
         if (sender)
