@@ -67,7 +67,7 @@ private:
     int m, n;
 
     // Initial and current time
-    double t0, t;
+    double starting_time, t;
 
     // Discrete time step
     double dt;
