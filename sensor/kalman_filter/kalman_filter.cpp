@@ -1,6 +1,8 @@
 #include <iostream>
 #include "kalman_filter.h"
-
+#define MEASUREMENTS    1
+#define STATES          3
+#define DELTAT          1.0 / 30
 using namespace poc_autosar;
 
 KalmanFilter::KalmanFilter(double dt, const KalmanMatrices& kalman_matrices)    
@@ -13,9 +15,9 @@ KalmanFilter::KalmanFilter(double dt, const KalmanMatrices& kalman_matrices)
 
 KalmanFilter::KalmanFilter() :initialized(false)
 {    
-    dt = 1.0 / 30;
-    n = 3;
-    m = 1;    
+    dt = DELTAT;
+    n = STATES;
+    m = MEASUREMENTS;
     A = Eigen::MatrixXd(n, n); // System dynamics matrix
     C = Eigen::MatrixXd(m, n); // Output matrix
     Q = Eigen::MatrixXd(n, n); // Process noise covariance
