@@ -12,10 +12,10 @@ KalmanFilter::KalmanFilter(double dt, const KalmanMatrices& kalman_matrices)
 }
 
 KalmanFilter::KalmanFilter() :initialized(false)
-{
+{    
     dt = 1.0 / 30;
     n = 3;
-    m = 1;
+    m = 1;    
     A = Eigen::MatrixXd(n, n); // System dynamics matrix
     C = Eigen::MatrixXd(m, n); // Output matrix
     Q = Eigen::MatrixXd(n, n); // Process noise covariance
@@ -36,12 +36,12 @@ KalmanFilter::KalmanFilter() :initialized(false)
 
 }
 
-void KalmanFilter::init(double t0, const Eigen::VectorXd& x0)
+void KalmanFilter::init(double starting_time, const Eigen::VectorXd& starting_value)
 {
-    x_hat = x0;
+    x_hat = starting_value;
     P = P0;
-    this->t0 = t0;
-    t = t0;
+    this->starting_time = starting_time;
+    t = starting_time;
     initialized = true;
 }
 
@@ -53,12 +53,12 @@ void KalmanFilter::predict()
 
 void KalmanFilter::init()
 {
-    Eigen::VectorXd x0(n);
-    x0 << 1, 0, -9.81;
-    x_hat = x0;
+    Eigen::VectorXd starting_value(n);
+    starting_value << 1, 0, -9.81;
+    x_hat = starting_value;
     P = P0;
-    t0 = 0;
-    t = t0;
+    starting_time = 0;
+    t = starting_time;
     initialized = true;
 }
 
