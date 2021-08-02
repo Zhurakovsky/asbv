@@ -1,11 +1,13 @@
 #ifndef KALMAN_FILTER_H
 #define KALMAN_FILTER_H
 
-#include <Eigen/Dense>
+#include "types.hpp"
+
+namespace poc_autosar
+{
 
 class KalmanFilter
 {
-
 public:
 
     /**
@@ -16,14 +18,7 @@ public:
     *   R - Measurement noise covariance
     *   P - Estimate error covariance
     */
-    KalmanFilter(
-        double dt,
-        const Eigen::MatrixXd& A,
-        const Eigen::MatrixXd& C,
-        const Eigen::MatrixXd& Q,
-        const Eigen::MatrixXd& R,
-        const Eigen::MatrixXd& P
-    );
+    KalmanFilter(double dt, const KalmanMatrices& kalman_matrices);
 
     /**
     * Create a blank estimator.
@@ -86,5 +81,6 @@ private:
     // Estimated states
     Eigen::VectorXd x_hat, x_hat_new;
 };
+}
 
 #endif // KALMAN_FILTER_H
