@@ -1,14 +1,10 @@
 #include <iostream>
 #include "kalman_filter.h"
 
-KalmanFilter::KalmanFilter(
-    double dt,
-    const Eigen::MatrixXd& A,
-    const Eigen::MatrixXd& C,
-    const Eigen::MatrixXd& Q,
-    const Eigen::MatrixXd& R,
-    const Eigen::MatrixXd& P)
-    : A(A), C(C), Q(Q), R(R), P0(P),
+using namespace poc_autosar;
+
+KalmanFilter::KalmanFilter(double dt, const KalmanMatrices& kalman_matrices)    
+    : A(kalman_matrices.A), C(kalman_matrices.C), Q(kalman_matrices.Q), R(kalman_matrices.R), P0(kalman_matrices.P),
     m(C.rows()), n(A.rows()), dt(dt), initialized(false),
     I(n, n), x_hat(n), x_hat_new(n)
 {
@@ -78,7 +74,6 @@ void KalmanFilter::update(const Eigen::VectorXd& y)
 
 void KalmanFilter::update(const Eigen::VectorXd& y, double dt, const Eigen::MatrixXd A)
 {
-
     this->A = A;
     this->dt = dt;
     update(y);
