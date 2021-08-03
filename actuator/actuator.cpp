@@ -13,6 +13,8 @@
 #include "config_mgmt.hpp"
 #include "socketActuator.hpp"
 
+#include "log_manager.hpp"
+
 using namespace std;
 using namespace poc_autosar;
 using namespace std::chrono_literals;
@@ -53,6 +55,12 @@ err_t parse_cmdline(int argc, char** argv, ActuatorSwcConfigType &config)
     config.socket_actuator.port = parser.config_get<int>("SOCKET_PORT"s);
     config.socket_actuator.addr = parser.config_get<string>("SOCKET_ADDR"s);
 
+    config.log.name = parser.config_get<string>("LOG_NAME"s);
+    config.log.console_colour_foreground = parser.config_get<string>("LOG_CONSOLE_COLOUR_FOREGROUND"s);
+    config.log.use_console = parser.config_get<bool>("LOG_USE_CONSOLE"s);
+    config.log.use_file = parser.config_get<bool>("LOG_USE_FILE"s);
+    config.log.custom_filename = parser.config_get<string>("LOG_CUSTOM_FILENAME"s);
+
     return RC_SUCCESS;
 }
 
@@ -60,6 +68,9 @@ int main(int argc, char** argv)
 {
     ActuatorSwcConfigType actuator_config;
     parse_cmdline(argc, argv, actuator_config);
+
+    LogManager::Start();
+    LogManager::Create(actuator_config.log);
 
     std::unique_ptr<IPidToActuatorReceiver> receiver(nullptr);
     std::unique_ptr<IActuator> actuator(nullptr);
@@ -72,15 +83,19 @@ int main(int argc, char** argv)
     switch(actuator_config.actuator)
     {
         case Actuator::STDOUT_ACTUATOR:
+            LogManager::Log(actuator_config.log.name, "ACTUATOR PARSED: STDOUT");
             actuator.reset(new StdoutActuator());
             break;
         case Actuator::CARLA_ACTUATOR:
+            LogManager::Log(actuator_config.log.name, "ACTUATOR PARSED: SOCKET");
             actuator.reset(new SocketActuator(actuator_config.socket_actuator));
             break;
         case Actuator::PWM_ACTUATOR:
+            LogManager::Log(actuator_config.log.name, "ACTUATOR PARSED: PWM");
             actuator.reset(new RaspiActuator());
             break;
         default:
+            LogManager::Log(actuator_config.log.name, "ACTUATOR PARSED: NONE");
             break;
     }
     
@@ -98,7 +113,11 @@ int main(int argc, char** argv)
 
         if (actuator)
         {
-            actuator->write(data);
+            if (actuator->write(data) == RC_SUCCESS)
+            {
+                std::string logMessage = "ACTUATOR SEND. NEXT STEER ANGLE: " + std::to_string(data.steer_angle);
+                LogManager::Log(actuator_config.log.name, logMessage);
+            }
         }
         std::this_thread::sleep_for(10ms);
     }

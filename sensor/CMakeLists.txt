@@ -29,7 +29,10 @@ add_executable(sensorApp
     ${COMMON_HEADERS_DIRECTORY}/types.hpp
     ${COMMON_HEADERS_DIRECTORY}/config_mgmt.hpp
     ${COMMON_HEADERS_DIRECTORY}/socketWrappers.cpp
-    ${COMMON_HEADERS_DIRECTORY}/socketWrappers.hpp)
+    ${COMMON_HEADERS_DIRECTORY}/socketWrappers.hpp
+    ${COMMON_HEADERS_DIRECTORY}/log_manager.cpp
+    ${COMMON_HEADERS_DIRECTORY}/log_manager.hpp
+)
 
 target_include_directories(sensorApp PUBLIC ${COMMON_HEADERS_DIRECTORY})
 
@@ -40,7 +43,10 @@ if(WIRINGPI_LIBRARIES)
 endif()
 endif()
 
-target_link_libraries(sensorApp ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(sensorApp 
+    PRIVATE quill::quill
+    ${CMAKE_THREAD_LIBS_INIT}
+)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sensorApp> ${PROJECT_BINARY_DIR}/../sensorApp

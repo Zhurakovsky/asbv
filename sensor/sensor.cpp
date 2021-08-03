@@ -14,6 +14,8 @@
 #include "raspi_sensor.hpp"
 #include "socketSensor.hpp"
 
+#include "log_manager.hpp"
+
 using namespace std;
 using namespace poc_autosar;
 using namespace std::chrono_literals;
@@ -62,6 +64,12 @@ err_t parse_cmdline(int argc, char** argv, SensorSwcConfigType &config)
     config.linux_sender_to_pid.pathname = parser.config_get<string>("SENSOR_TO_PID_LINUX_PATHNAME"s);
     config.linux_sender_to_pid.proj_id = parser.config_get<int>("SENSOR_TO_PID_LINUX_PROJID"s);
 
+    config.log.name = parser.config_get<string>("LOG_NAME"s);
+    config.log.console_colour_foreground = parser.config_get<string>("LOG_CONSOLE_COLOUR_FOREGROUND"s);
+    config.log.use_console = parser.config_get<bool>("LOG_USE_CONSOLE"s);
+    config.log.use_file = parser.config_get<bool>("LOG_USE_FILE"s);
+    config.log.custom_filename = parser.config_get<string>("LOG_CUSTOM_FILENAME"s);
+
     return RC_SUCCESS;
 }
 
@@ -69,6 +77,9 @@ int main(int argc, char** argv)
 {
     SensorSwcConfigType sensor_config;
     parse_cmdline(argc, argv, sensor_config);
+
+    LogManager::Start();
+    LogManager::Create(sensor_config.log);
 
     std::unique_ptr<ISensorToPidSender> sender(nullptr);
     std::unique_ptr<ISensor> sensor(nullptr);
@@ -86,29 +97,31 @@ int main(int argc, char** argv)
     switch (sensor_config.sensor)
     {
         case Sensor::RANDOM_SENSOR:
+            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: RANDOM");
             sensor.reset(new RandomSensor);
             break;
 
         case Sensor::I2C_SENSOR:
         #ifdef _WIRINGPI
+            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: RASPI");
             sensor.reset(new RaspiSensor);
         #else
-            cout << "Raspberry sensor unavailable. RandomSensor created instead" << endl;
+            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: RANDOM (Raspi sensor unavailable)");
             sensor.reset(new RandomSensor);
         #endif //_WIRINGPI
             break;
 
         case Sensor::STATIC_SENSOR:
-            std::cout << "STATIC_SENSOR PARSED" << std::endl;
+            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: STATIC");
             sensor.reset(new StaticSensor(sensor_config.static_sensor));
             break;
 
         case Sensor::CARLA_SENSOR:
-            std::cout << "CARLA_SENSOR PARSED" << std::endl;
+            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: SOCKET");
             sensor.reset(new SocketSensor(sensor_config.socket_sensor));
             break;
         default:
-            std::cout << "NO SENSOR PARSED" << std::endl;
+            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: NONE");
             break;
     }
 
@@ -121,6 +134,11 @@ int main(int argc, char** argv)
             if (sensor->read(data) != RC_SUCCESS)
             {
                 continue;
+            }
+            else
+            {
+                std::string logMessage = "SENSOR READ. CURRENT ROLL ANGLE: " + std::to_string(data.roll_angle);
+                LogManager::Log(sensor_config.log.name, logMessage);
             }
         }
 
