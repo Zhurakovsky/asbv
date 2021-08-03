@@ -48,3 +48,6 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sensorApp> ${PROJECT_BINARY_DIR}/../sensorApp
     COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE:sensorApp> ${PROJECT_BINARY_DIR}
 )
+
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+target_link_libraries (sensorApp Eigen3::Eigen)
