@@ -46,3 +46,6 @@ add_custom_command(TARGET actuatorApp POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:actuatorApp> ${PROJECT_BINARY_DIR}/../actuatorApp
     COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE:actuatorApp> ${PROJECT_BINARY_DIR}
 )
+
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+target_link_libraries (actuatorApp Eigen3::Eigen)

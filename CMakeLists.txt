@@ -15,6 +15,7 @@ find_package(Threads)
 add_subdirectory(sensor)
 add_subdirectory(pid)
 add_subdirectory(actuator)
+add_subdirectory(eigen)
 
 add_executable(AutosarPocApp
     main.cpp
@@ -27,3 +28,5 @@ target_include_directories(AutosarPocApp PUBLIC ${COMMON_HEADERS_DIRECTORY})
 
 target_link_libraries(AutosarPocApp ${CMAKE_THREAD_LIBS_INIT})
 
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+target_link_libraries (AutosarPocApp Eigen3::Eigen)
