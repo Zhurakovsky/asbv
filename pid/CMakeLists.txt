@@ -28,6 +28,3 @@ add_custom_command(TARGET pidControllerApp POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pidControllerApp> ${PROJECT_BINARY_DIR}/../pidControllerApp
     COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE:pidControllerApp> ${PROJECT_BINARY_DIR}
 )
-
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
-target_link_libraries (pidControllerApp Eigen3::Eigen)

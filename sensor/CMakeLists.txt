@@ -29,9 +29,7 @@ add_executable(sensorApp
     ${COMMON_HEADERS_DIRECTORY}/types.hpp
     ${COMMON_HEADERS_DIRECTORY}/config_mgmt.hpp
     ${COMMON_HEADERS_DIRECTORY}/socketWrappers.cpp
-    ${COMMON_HEADERS_DIRECTORY}/socketWrappers.hpp
-    kalman_filter/kalman_filter.cpp
-    kalman_filter/kalman_filter.h)
+    ${COMMON_HEADERS_DIRECTORY}/socketWrappers.hpp)
 
 target_include_directories(sensorApp PUBLIC ${COMMON_HEADERS_DIRECTORY})
 
@@ -48,6 +46,3 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sensorApp> ${PROJECT_BINARY_DIR}/../sensorApp
     COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE:sensorApp> ${PROJECT_BINARY_DIR}
 )
-
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
-target_link_libraries (sensorApp Eigen3::Eigen)

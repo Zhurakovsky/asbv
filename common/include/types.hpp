@@ -1,27 +1,8 @@
 #ifndef POC_EXAMPLE_COMMON_TYPES_HPP
 #define POC_EXAMPLE_COMMON_TYPES_HPP
 
-#include <Eigen/Dense>
-
 namespace poc_autosar
 {
-
-struct KalmanMatrices
-{
-    KalmanMatrices(
-        const Eigen::MatrixXd& A,
-        const Eigen::MatrixXd& C,
-        const Eigen::MatrixXd& Q,
-        const Eigen::MatrixXd& R,
-        const Eigen::MatrixXd& P)
-        :A(A), C(C), Q(Q), R(R), P(P)
-    {}
-    Eigen::MatrixXd A;
-    Eigen::MatrixXd C;
-    Eigen::MatrixXd Q;
-    Eigen::MatrixXd R;
-    Eigen::MatrixXd P;
-};
 
 enum err_t {
     RC_FAIL = -1,
