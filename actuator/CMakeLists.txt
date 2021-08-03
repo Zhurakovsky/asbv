@@ -29,11 +29,18 @@ add_executable(actuatorApp
     ${COMMON_HEADERS_DIRECTORY}/types.hpp
     ${COMMON_HEADERS_DIRECTORY}/socketWrappers.cpp
     ${COMMON_HEADERS_DIRECTORY}/socketWrappers.hpp
-    ${COMMON_HEADERS_DIRECTORY}/config_mgmt.hpp)
+    ${COMMON_HEADERS_DIRECTORY}/config_mgmt.hpp
+    ${COMMON_HEADERS_DIRECTORY}/log_manager.cpp
+    ${COMMON_HEADERS_DIRECTORY}/log_manager.hpp
+)
 
 target_include_directories(actuatorApp PRIVATE ${COMMON_HEADERS_DIRECTORY})
 
-target_link_libraries(actuatorApp Threads::Threads)
+target_link_libraries(actuatorApp
+    PRIVATE quill::quill
+    Threads::Threads
+)
+
 
 if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l")
 if(WIRINGPI_LIBRARIES)

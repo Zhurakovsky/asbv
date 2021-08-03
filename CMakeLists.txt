@@ -12,6 +12,7 @@ message("MY SYSTEM *******" ${CMAKE_SYSTEM_NAME})
 
 find_package(Threads)
 
+add_subdirectory(quill)
 add_subdirectory(sensor)
 add_subdirectory(pid)
 add_subdirectory(actuator)
@@ -21,9 +22,14 @@ add_executable(AutosarPocApp
     config_parser/config_parser.cpp
     config_parser/config_parser.hpp
     ${COMMON_HEADERS_DIRECTORY}/types.hpp
+    ${COMMON_HEADERS_DIRECTORY}/log_manager.hpp
+    ${COMMON_HEADERS_DIRECTORY}/log_manager.cpp
 )
 
 target_include_directories(AutosarPocApp PUBLIC ${COMMON_HEADERS_DIRECTORY})
 
-target_link_libraries(AutosarPocApp ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(AutosarPocApp
+    PRIVATE quill::quill
+    ${CMAKE_THREAD_LIBS_INIT}
+)
 

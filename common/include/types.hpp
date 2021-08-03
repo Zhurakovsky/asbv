@@ -53,6 +53,15 @@ struct LinuxMsgQueueConfig
 typedef LinuxMsgQueueConfig LinuxSensorToPidConfig;
 typedef LinuxMsgQueueConfig LinuxPidToActuatorConfig;
 
+struct LogConfig
+{
+    std::string name = "";
+    bool use_console = false;
+    bool use_file = false;
+    std::string console_colour_foreground = "";
+    std::string custom_filename = "";
+};
+
 struct SocketSensorConfig
 {
     std::string addr;
@@ -73,6 +82,7 @@ struct SensorSwcConfigType
     StaticSensorConfig static_sensor;
     SensorToPid sensor_to_pid_sender{SensorToPid::UNDEFINED_SENSOR_TO_PID};
     LinuxSensorToPidConfig linux_sender_to_pid;
+    LogConfig log;
 };
 
 struct PidControllerConfig
@@ -103,6 +113,7 @@ struct ActuatorSwcConfigType
     Actuator actuator{Actuator::UNDEFINED_ACTUATOR};
     SocketActuatorConfig socket_actuator;
     LinuxPidToActuatorConfig linux_pid_to_actuator;
+    LogConfig log;
 };
 
 struct CommonSwcConfigType
