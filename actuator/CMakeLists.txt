@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(COMMON_HEADERS_DIRECTORY ${COMMON_HEADERS_DIRECTORY}  PARENT_SCOPE)
+set(OUTPUT_DIR ${OUTPUT_DIR}  PARENT_SCOPE)
 
 find_package(Threads)
 
@@ -35,9 +36,11 @@ add_executable(actuatorApp
 )
 
 target_include_directories(actuatorApp PRIVATE ${COMMON_HEADERS_DIRECTORY})
+target_include_directories(actuatorApp PRIVATE ${CMAKE_SOURCE_DIR}/plotting)
 
 target_link_libraries(actuatorApp
-    PRIVATE quill::quill
+    plotting
+    quill::quill
     Threads::Threads
 )
 
@@ -49,7 +52,6 @@ if(WIRINGPI_LIBRARIES)
 endif()
 endif()
 
-add_custom_command(TARGET actuatorApp POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:actuatorApp> ${PROJECT_BINARY_DIR}/../actuatorApp
-    COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE:actuatorApp> ${PROJECT_BINARY_DIR}
+install(TARGETS actuatorApp
+    RUNTIME DESTINATION ${OUTPUT_DIR}
 )

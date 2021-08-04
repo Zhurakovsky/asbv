@@ -6,16 +6,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(COMMON_HEADERS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/common/include)
+set(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(OUTPUT_DIR ${PROJECT_BINARY_DIR})
+set(CMAKE_INSTALL_RPATH "${OUTPUT_DIR}")
 
 message("MY PROCESSOR *******" ${CMAKE_SYSTEM_PROCESSOR})
 message("MY SYSTEM *******" ${CMAKE_SYSTEM_NAME})
 
 find_package(Threads)
 
+add_subdirectory(plotting)
 add_subdirectory(quill)
 add_subdirectory(sensor)
 add_subdirectory(pid)
 add_subdirectory(actuator)
+add_subdirectory(webui)
 
 add_executable(AutosarPocApp
     main.cpp

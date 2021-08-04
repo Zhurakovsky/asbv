@@ -44,6 +44,12 @@ enum class Actuator : uint8_t
     CAN_ACTUATOR
 };
 
+struct PlottingConfig
+{
+    std::string webui_server_ip;
+    uint32_t webui_server_port;
+};
+
 struct LinuxMsgQueueConfig
 {
     std::string pathname;
@@ -83,6 +89,7 @@ struct SensorSwcConfigType
     SensorToPid sensor_to_pid_sender{SensorToPid::UNDEFINED_SENSOR_TO_PID};
     LinuxSensorToPidConfig linux_sender_to_pid;
     LogConfig log;
+    PlottingConfig plotting_config;
 };
 
 struct PidControllerConfig
@@ -99,6 +106,7 @@ struct PidSwcConfigType
     LinuxSensorToPidConfig linux_sender_to_pid;
     LinuxPidToActuatorConfig linux_pid_to_actuator;
     PidControllerConfig pid_config;
+    PlottingConfig plotting_config;
 };
 
 struct SocketActuatorConfig
@@ -114,6 +122,7 @@ struct ActuatorSwcConfigType
     SocketActuatorConfig socket_actuator;
     LinuxPidToActuatorConfig linux_pid_to_actuator;
     LogConfig log;
+    PlottingConfig plotting_config;
 };
 
 struct CommonSwcConfigType

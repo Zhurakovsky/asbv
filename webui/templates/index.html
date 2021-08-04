@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PoC Real-Time Charts</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+    </div>
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="static/Chart.min.js"></script>
+<script src="static/luxon.min.js"></script>
+<script src="static/chartjs-adapter-luxon"></script>
+<script src="static/chartjs-plugin-streaming.min.js"></script>
+<script>
+    charts = {};
+
+    function createChart(name, id, labels)
+    {
+        //name = "chart name"
+        //id = "chart" + Object.keys(charts).length;
+        $(".container")[0].insertAdjacentHTML("beforebegin", `
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <canvas id="` + id + `"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `);
+
+        var tmpChart = createNewChart(id, name, labels);
+        charts[id] = tmpChart;
+
+        return charts[id];
+    }
+
+    function createNewChart(id, name, labels)
+    {
+        var config = {
+            type: 'line',
+            data: {
+            },
+            options: {
+                responsiveAnimationDuration: 0,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: name
+                    },
+                    legend: {
+                        position: 'top',
+                    },
+                },
+                tooltips: {
+                    mode: 'nearest',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true,
+                },
+                interaction: {
+                    intersect: false
+                },
+                scales: {
+                    x: {
+                        type: 'realtime',
+                        realtime: {
+                            duration: 20000,
+                            delay: 1000,
+                            refresh: 1000,
+                        }
+                    },
+                    y: {
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'value'
+                        }
+                    }
+                }
+            }
+        };
+
+        var context = document.getElementById(id).getContext('2d');
+        var lineChart = new Chart(context, config);
+        return lineChart;
+    }
+
+    function random_rgba() {
+        var o = Math.round, r = Math.random, s = 255;
+        return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
+    }
+
+    function addDataset(chart, name)
+    {
+        var color = random_rgba()
+        var newDataset = {
+            label: name,
+            backgroundColor: color,
+            borderColor: color,
+            fill: false,
+            lineTension: 0,
+            cubicInterpolationMode: 'monotone',
+            data: []
+        };
+
+        chart.config.data.datasets.push(newDataset);
+        chart.update();
+    }
+
+    function addData(chart, datasetId, newData, time)
+    {
+        datasetIdx = chart.data.datasets.findIndex(el => el.label == chartVar);
+        chart.data.datasets[datasetIdx].data.push({
+            x: Date.parse(time),
+            y: newData
+        });
+        chart.update();
+    }
+
+    $(document).ready(function () {
+        const source = new EventSource("/chart-data");
+
+            source.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                for (plot in data.plots) {
+                    if (charts[plot] != undefined) {
+                        for (chartVar in data.plots[plot]) {
+                            addData(charts[plot], chartVar, data.plots[plot][chartVar], data.time);
+                        }
+                    } else {
+                        var chart = createChart(plot, plot);
+                        for (chartVar in data.plots[plot]) {
+                            addDataset(chart, chartVar);
+                        }
+                    }
+                }
+            }
+    });
+</script>
+</body>
+</html>

@@ -26,7 +26,7 @@ public:
         data.linear_speed =         get_random();
         data.roll_angle =           get_random();
         data.roll_accelleration =   get_random();
-        
+
         return RC_SUCCESS;
     }
 };

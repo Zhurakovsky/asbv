@@ -7,7 +7,7 @@
 
 #include "msg_types.hpp"
 #include "types.hpp"
-#include <iomanip>
+#include "plotting.hpp"
 
 namespace poc_autosar
 {
@@ -20,10 +20,22 @@ public:
     virtual err_t write(const ActuatorData &data) = 0;
 };
 
-
 class StdoutActuator : public IActuator
 {
+private:
+    Plot& actuator_plot;
 public:
+    StdoutActuator():
+    actuator_plot(Plotting::GetInstance().AddPlot("Actuator"))
+    {
+        // Please son't ask me about this line.
+        // This workaround is needed to avoid error: "malloc_consolidate(): invalid chunk size on printf"
+        std::cout << std::endl;
+        actuator_plot.AddPlotVar("Desired jaw");
+        actuator_plot.AddPlotVar("ABS angle");
+        actuator_plot.AddPlotVar("PWM Pulses");
+    }
+
     virtual const std::string describe() override { return "Bypass"; }
     err_t write(const ActuatorData &data) override
     {
@@ -58,6 +70,10 @@ public:
         current_intensity = std::ceil((absolute_jaw / step)) + half_range;
 
         std::cout << std::setw(10) << "Desired jaw: " << desired_jaw << ", ABS angle: " << absolute_jaw << ", PWM Pulses: " << current_intensity << std::endl; 
+
+        actuator_plot.AddPlotPoint("Desired jaw", desired_jaw);
+        actuator_plot.AddPlotPoint("ABS angle", absolute_jaw);
+        actuator_plot.AddPlotPoint("PWM Pulses", current_intensity);
 
         return RC_SUCCESS;
     }

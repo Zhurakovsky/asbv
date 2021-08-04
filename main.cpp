@@ -16,7 +16,7 @@
 using namespace std;
 using namespace poc_autosar;
 
-int child_pids[3];
+int child_pids[4];
 
 void signalHandler( int signum )
 {
@@ -106,6 +106,7 @@ int main(int argc, char** argv)
     child_pids[0] = run_child_proc("./pidControllerApp"s, cfg.get_pid_config_line());
     child_pids[1] = run_child_proc("./sensorApp"s, cfg.get_sensor_config_line());
     child_pids[2] = run_child_proc("./actuatorApp"s, cfg.get_actuator_config_line());
+    child_pids[3] = run_child_proc("./www/webui.py"s, cfg.get_webui_config_line());
 
     while(true)
     {
