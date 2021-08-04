@@ -13,6 +13,7 @@
 #include "config_mgmt.hpp"
 #include "raspi_sensor.hpp"
 #include "socketSensor.hpp"
+#include "plotting.hpp"
 
 #include "log_manager.hpp"
 
@@ -69,6 +70,11 @@ err_t parse_cmdline(int argc, char** argv, SensorSwcConfigType &config)
     config.log.use_console = parser.config_get<bool>("LOG_USE_CONSOLE"s);
     config.log.use_file = parser.config_get<bool>("LOG_USE_FILE"s);
     config.log.custom_filename = parser.config_get<string>("LOG_CUSTOM_FILENAME"s);
+    config.plotting_config.webui_server_ip = parser.config_get<string>("PLOTTING_SERVER_IP"s);
+    config.plotting_config.webui_server_port = parser.config_get<int>("PLOTTING_SERVER_PORT"s);
+
+    config.log.use_file = parser.config_get<bool>("LOG_USE_FILE"s);
+    config.log.custom_filename = parser.config_get<string>("LOG_CUSTOM_FILENAME"s);
 
     return RC_SUCCESS;
 }
@@ -83,6 +89,13 @@ int main(int argc, char** argv)
 
     std::unique_ptr<ISensorToPidSender> sender(nullptr);
     std::unique_ptr<ISensor> sensor(nullptr);
+
+    Plotting::GetInstance().Configure(sensor_config.plotting_config.webui_server_ip,
+                                      sensor_config.plotting_config.webui_server_port);
+    Plot& sensor_plot = Plotting::GetInstance().AddPlot("Sensor");
+    sensor_plot.AddPlotVar("linear_speed");
+    sensor_plot.AddPlotVar("roll_accelleration");
+    sensor_plot.AddPlotVar("roll_angle");
 
     switch (sensor_config.sensor_to_pid_sender)
     {
@@ -145,6 +158,9 @@ int main(int argc, char** argv)
         if (sender)
         {
             sender->send(data);
+            sensor_plot.AddPlotPoint("linear_speed", data.linear_speed);
+            sensor_plot.AddPlotPoint("roll_accelleration", data.roll_accelleration);
+            sensor_plot.AddPlotPoint("roll_angle", data.roll_angle);
         }
         
         std::this_thread::sleep_for(10ms);

@@ -76,8 +76,8 @@ int main(int argc, char** argv)
     }
 
     SensorData sensor_data;
-    ActuatorData actuator_data;            
-    
+    ActuatorData actuator_data;
+
     while (true)
     {
         if (sensor_to_pid_receiver)

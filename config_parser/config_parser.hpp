@@ -13,7 +13,8 @@ enum config_type
     CONFIG_SENSOR,
     CONFIG_PID,
     CONFIG_ACTUATOR,
-    CONFIG_COMMON
+    CONFIG_COMMON,
+    CONFIG_WEBUI
 };
 
 class ConfigParser
@@ -25,6 +26,7 @@ public:
     std::vector<std::string> get_sensor_config_line();
     std::vector<std::string> get_pid_config_line();
     std::vector<std::string> get_actuator_config_line();
+    std::vector<std::string> get_webui_config_line();
 private:
     std::map<config_type, std::map<std::string, std::string>> parsed_config;
     std::string config_file_path;
