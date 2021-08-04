@@ -162,7 +162,7 @@ int main(int argc, char** argv)
 			std::string logMessage = "SENSOR READ. CURRENT ROLL ANGLE: " + std::to_string(data.roll_angle);
             LogManager::Log(sensor_config.log.name, logMessage);
 			
-           // data_file << data.roll_angle << std::endl;
+            //data_file << data.roll_angle << std::endl;
             y << data.roll_angle;
             kalman_filter.predict();
             kalman_filter.update(y);
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
             data.roll_angle = kalman_filter.state().transpose()[0];
             //filtered_data_file << data.roll_angle << std::endl;
 			
-			std::string logMessage = "SENSOR READ. FILTERED ROLL ANGLE: " + std::to_string(data.roll_angle);
+			logMessage = "SENSOR READ. FILTERED ROLL ANGLE: " + std::to_string(data.roll_angle);
             LogManager::Log(sensor_config.log.name, logMessage);
 		}
 
