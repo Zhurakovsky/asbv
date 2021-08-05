@@ -108,25 +108,18 @@ int main(int argc, char** argv)
 
     ActuatorData data = {0};
 
-    while(true)
+    while (true)
     {
-        if (receiver)
+        if (receiver && receiver->receive(data) == RC_SUCCESS)
         {
-            if (receiver->receive(data) != RC_SUCCESS)
-            {
-                continue;
-            }
-        }
-
-        if (actuator)
-        {
-            if (actuator->write(data) == RC_SUCCESS)
+            if (actuator && actuator->write(data) == RC_SUCCESS)
             {
                 std::string logMessage = "ACTUATOR SEND. NEXT STEER ANGLE: " + std::to_string(data.steer_angle);
                 LogManager::Log(actuator_config.log.name, logMessage);
             }
+
+            std::this_thread::sleep_for(10ms);
         }
-        std::this_thread::sleep_for(10ms);
     }
     return 0;
 }
