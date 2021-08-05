@@ -152,13 +152,8 @@ int main(int argc, char** argv)
 
     while (true)
     {
-        if (sensor)
+        if (sensor && sensor->read(data) == RC_SUCCESS)
         {
-            if (sensor->read(data) != RC_SUCCESS)
-            {
-                continue;
-            }
-			
 			std::string logMessage = "SENSOR READ. CURRENT ROLL ANGLE: " + std::to_string(data.roll_angle);
             LogManager::Log(sensor_config.log.name, logMessage);
 			
@@ -172,17 +167,17 @@ int main(int argc, char** argv)
 			
 			logMessage = "SENSOR READ. FILTERED ROLL ANGLE: " + std::to_string(data.roll_angle);
             LogManager::Log(sensor_config.log.name, logMessage);
-		}
 
-        if (sender)
-        {
-            sender->send(data);
-            sensor_plot.AddPlotPoint("linear_speed", data.linear_speed);
-            sensor_plot.AddPlotPoint("roll_accelleration", data.roll_accelleration);
-            sensor_plot.AddPlotPoint("roll_angle", data.roll_angle);
-        }
-        
-        std::this_thread::sleep_for(10ms);
+            if (sender)
+            {
+                sender->send(data);
+                sensor_plot.AddPlotPoint("linear_speed", data.linear_speed);
+                sensor_plot.AddPlotPoint("roll_accelleration", data.roll_accelleration);
+                sensor_plot.AddPlotPoint("roll_angle", data.roll_angle);
+            }
+            
+            std::this_thread::sleep_for(10ms);
+		}
     }
     return 0;
 }
