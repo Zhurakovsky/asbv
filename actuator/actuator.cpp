@@ -90,19 +90,19 @@ int main(int argc, char** argv)
     switch(actuator_config.actuator)
     {
         case Actuator::STDOUT_ACTUATOR:
-            LogManager::Log(actuator_config.log.name, "ACTUATOR PARSED: STDOUT");
+            LOG(actuator_config.log.name, "ACTUATOR PARSED: STDOUT");
             actuator.reset(new StdoutActuator());
             break;
         case Actuator::CARLA_ACTUATOR:
-            LogManager::Log(actuator_config.log.name, "ACTUATOR PARSED: SOCKET");
+            LOG(actuator_config.log.name, "ACTUATOR PARSED: SOCKET");
             actuator.reset(new SocketActuator(actuator_config.socket_actuator));
             break;
         case Actuator::PWM_ACTUATOR:
-            LogManager::Log(actuator_config.log.name, "ACTUATOR PARSED: PWM");
+            LOG(actuator_config.log.name, "ACTUATOR PARSED: PWM");
             actuator.reset(new RaspiActuator());
             break;
         default:
-            LogManager::Log(actuator_config.log.name, "ACTUATOR PARSED: NONE");
+            LOG(actuator_config.log.name, "ACTUATOR PARSED: NONE");
             break;
     }
 
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
             if (actuator && actuator->write(data) == RC_SUCCESS)
             {
                 std::string logMessage = "ACTUATOR SEND. NEXT STEER ANGLE: " + std::to_string(data.steer_angle);
-                LogManager::Log(actuator_config.log.name, logMessage);
+                LOG(actuator_config.log.name, logMessage);
             }
 
             std::this_thread::sleep_for(10ms);

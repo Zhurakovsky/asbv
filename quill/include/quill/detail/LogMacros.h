@@ -10,6 +10,7 @@
 #include "quill/Logger.h"
 #include "quill/detail/misc/Macros.h"
 #include <type_traits>
+#include "quill/Quill.h"
 
 // Config Options
 #define QUILL_LOG_LEVEL_TRACE_L3 0
@@ -67,6 +68,25 @@
       logger->log<try_fast_queue, is_backtrace_log_record, decltype(anonymous_log_record_info)>    \
                                                              (FMT_STRING(fmt),  ##__VA_ARGS__);    \
     }                                                                                              \
+  } while (0)
+
+//call by name
+#define QUILL_LOGGER_CALL_BY_NAME(likelyhood, loggerName, log_statement_level, fmt, ...)         \
+  do {                                                                                           \
+    static constexpr char const* function_name = __FUNCTION__;                                   \
+    struct {                                                                                     \
+      constexpr quill::LogMacroMetadata operator()() const noexcept {                            \
+        return quill::LogMacroMetadata{QUILL_STRINGIFY(__LINE__), __FILE__,                      \
+                                                function_name, fmt, log_statement_level}; }      \
+      } anonymous_log_record_info;                                                               \
+    quill::Logger* logger = quill::get_logger(loggerName.c_str());                               \
+    if (likelyhood(logger && logger->should_log<log_statement_level>()))                         \
+    {                                                                                            \
+      constexpr bool try_fast_queue {true}; /* Available in dual queue mode only */              \
+      constexpr bool is_backtrace_log_record {false};                                            \
+      logger->log<try_fast_queue, is_backtrace_log_record, decltype(anonymous_log_record_info)>  \
+                                                            (FMT_STRING(fmt),  ##__VA_ARGS__);   \
+    }                                                                                            \
   } while (0)
 
 #define QUILL_BACKTRACE_LOGGER_CALL(logger, fmt, ...)                                              \
@@ -156,6 +176,9 @@
   #define QUILL_LOG_INFO(logger, fmt, ...)                                                         \
     QUILL_LOGGER_CALL(QUILL_LIKELY, logger, quill::LogLevel::Info, fmt, ##__VA_ARGS__)
 
+  #define QUILL_LOG_INFO_BY_NAME(loggerName, fmt, ...)                                                         \
+    QUILL_LOGGER_CALL_BY_NAME(QUILL_LIKELY, loggerName, quill::LogLevel::Info, fmt, ##__VA_ARGS__)
+
   #if defined(QUILL_NOFN_MACROS)
     #define QUILL_LOG_INFO_NOFN(logger, fmt, ...)                                                  \
       QUILL_LOGGER_CALL_NOFN(QUILL_LIKELY, logger, quill::LogLevel::Info, fmt, ##__VA_ARGS__)
@@ -229,6 +252,8 @@
   #define LOG_ERROR(logger, fmt, ...) QUILL_LOG_ERROR(logger, fmt, ##__VA_ARGS__)
   #define LOG_CRITICAL(logger, fmt, ...) QUILL_LOG_CRITICAL(logger, fmt, ##__VA_ARGS__)
   #define LOG_BACKTRACE(logger, fmt, ...) QUILL_LOG_BACKTRACE(logger, fmt, ##__VA_ARGS__)
+  
+  #define LOG_INFO_BY_NAME(loggerName, fmt, ...) QUILL_LOG_INFO_BY_NAME(loggerName, fmt, ##__VA_ARGS__)
 
   #if defined(QUILL_NOFN_MACROS)
     #define LOG_TRACE_L3_NOFN(logger, fmt, ...) QUILL_LOG_TRACE_L3_NOFN(logger, fmt, ##__VA_ARGS__)

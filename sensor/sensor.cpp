@@ -113,31 +113,31 @@ int main(int argc, char** argv)
     switch (sensor_config.sensor)
     {
         case Sensor::RANDOM_SENSOR:
-            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: RANDOM");
+            LOG(sensor_config.log.name, "SENSOR PARSED: RANDOM");
             sensor.reset(new RandomSensor);
             break;
 
         case Sensor::I2C_SENSOR:
         #ifdef _WIRINGPI
-            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: RASPI");
+            LOG(sensor_config.log.name, "SENSOR PARSED: RASPI");
             sensor.reset(new RaspiSensor);
         #else
-            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: RANDOM (Raspi sensor unavailable)");
+            LOG(sensor_config.log.name, "SENSOR PARSED: RANDOM (Raspi sensor unavailable)");
             sensor.reset(new RandomSensor);
         #endif //_WIRINGPI
             break;
 
         case Sensor::STATIC_SENSOR:
-            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: STATIC");
+            LOG(sensor_config.log.name, "SENSOR PARSED: STATIC");
             sensor.reset(new StaticSensor(sensor_config.static_sensor));
             break;
 
         case Sensor::CARLA_SENSOR:
-            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: SOCKET");
+            LOG(sensor_config.log.name, "SENSOR PARSED: SOCKET");
             sensor.reset(new SocketSensor(sensor_config.socket_sensor));
             break;
         default:
-            LogManager::Log(sensor_config.log.name, "SENSOR PARSED: NONE");
+            LOG(sensor_config.log.name, "SENSOR PARSED: NONE");
             break;
     }
 
@@ -154,8 +154,8 @@ int main(int argc, char** argv)
     {
         if (sensor && sensor->read(data) == RC_SUCCESS)
         {
-			std::string logMessage = "SENSOR READ. CURRENT ROLL ANGLE: " + std::to_string(data.roll_angle);
-            LogManager::Log(sensor_config.log.name, logMessage);
+			std::string logMessage = "SENSOR READ. UNFILTERED ROLL ANGLE: " + std::to_string(data.roll_angle);
+            LOG(sensor_config.log.name, logMessage);
 			
             //data_file << data.roll_angle << std::endl;
             y << data.roll_angle;
@@ -166,7 +166,7 @@ int main(int argc, char** argv)
             //filtered_data_file << data.roll_angle << std::endl;
 			
 			logMessage = "SENSOR READ. FILTERED ROLL ANGLE: " + std::to_string(data.roll_angle);
-            LogManager::Log(sensor_config.log.name, logMessage);
+            LOG(sensor_config.log.name, logMessage);
 
             if (sender)
             {
