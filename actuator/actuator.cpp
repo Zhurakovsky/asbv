@@ -12,7 +12,6 @@
 #include "pidtoactuatorreceivers.hpp"
 #include "config_mgmt.hpp"
 #include "socketActuator.hpp"
-#include "plotting.hpp"
 
 #include "log_manager.hpp"
 
@@ -56,9 +55,6 @@ err_t parse_cmdline(int argc, char** argv, ActuatorSwcConfigType &config)
     config.socket_actuator.port = parser.config_get<int>("SOCKET_PORT"s);
     config.socket_actuator.addr = parser.config_get<string>("SOCKET_ADDR"s);
 
-    config.plotting_config.webui_server_ip = parser.config_get<string>("PLOTTING_SERVER_IP"s);
-    config.plotting_config.webui_server_port = parser.config_get<int>("PLOTTING_SERVER_PORT"s);
-
     config.log.name = parser.config_get<string>("LOG_NAME"s);
     config.log.console_colour_foreground = parser.config_get<string>("LOG_CONSOLE_COLOUR_FOREGROUND"s);
     config.log.use_console = parser.config_get<bool>("LOG_USE_CONSOLE"s);
@@ -78,9 +74,6 @@ int main(int argc, char** argv)
 
     std::unique_ptr<IPidToActuatorReceiver> receiver(nullptr);
     std::unique_ptr<IActuator> actuator(nullptr);
-
-    Plotting::GetInstance().Configure(actuator_config.plotting_config.webui_server_ip,
-                                      actuator_config.plotting_config.webui_server_port);
 
     if (actuator_config.pid_to_actuator_receiver == PidToActuator::LINUX_PID_TO_ACTUATOR)
     {
