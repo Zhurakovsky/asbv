@@ -1,5 +1,4 @@
 #include "log_manager.hpp"
-#include "quill/Quill.h"
 
 using namespace poc_autosar;
 using namespace quill;
@@ -52,15 +51,4 @@ bool LogManager::Create(const LogConfig& config)
     }
 
     return result;
-}
-
-void LogManager::Log(const std::string& loggerName, const std::string& message)
-{
-    if (!loggerName.empty())
-    {
-        if (Logger* logger = get_logger(loggerName.c_str()))
-        {
-            LOG_INFO(logger, "{}", message);
-        }
-    }
 }

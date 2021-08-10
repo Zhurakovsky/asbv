@@ -3,6 +3,9 @@
 
 #include "string"
 #include "types.hpp"
+#include "quill/detail/LogMacros.h"
+
+#define LOG(loggerName, message) LOG_INFO_BY_NAME(loggerName, "{}", message);
 
 namespace poc_autosar
 {
@@ -11,9 +14,7 @@ class LogManager
 {
 public:
     static void Start();
-
     static bool Create(const LogConfig& config);
-    static void Log(const std::string& loggerName, const std::string& message);
 };
 
 }
