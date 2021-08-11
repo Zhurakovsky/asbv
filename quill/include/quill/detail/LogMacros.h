@@ -71,22 +71,24 @@
   } while (0)
 
 //call by name
-#define QUILL_LOGGER_CALL_BY_NAME(likelyhood, loggerName, log_statement_level, fmt, ...)         \
-  do {                                                                                           \
-    static constexpr char const* function_name = __FUNCTION__;                                   \
-    struct {                                                                                     \
-      constexpr quill::LogMacroMetadata operator()() const noexcept {                            \
-        return quill::LogMacroMetadata{QUILL_STRINGIFY(__LINE__), __FILE__,                      \
-                                                function_name, fmt, log_statement_level}; }      \
-      } anonymous_log_record_info;                                                               \
-    quill::Logger* logger = quill::get_logger(loggerName.c_str());                               \
-    if (likelyhood(logger && logger->should_log<log_statement_level>()))                         \
-    {                                                                                            \
-      constexpr bool try_fast_queue {true}; /* Available in dual queue mode only */              \
-      constexpr bool is_backtrace_log_record {false};                                            \
-      logger->log<try_fast_queue, is_backtrace_log_record, decltype(anonymous_log_record_info)>  \
-                                                            (FMT_STRING(fmt),  ##__VA_ARGS__);   \
-    }                                                                                            \
+#define QUILL_LOGGER_CALL_BY_NAME(likelyhood, loggerName, log_statement_level, fmt, ...)           \
+  do {                                                                                             \
+    if (!loggerName.empty()) {                                                                     \
+      if (quill::Logger* logger = quill::get_logger(loggerName.c_str())) {                         \
+        static constexpr char const* function_name = __FUNCTION__;                                 \
+        struct {                                                                                   \
+          constexpr quill::LogMacroMetadata operator()() const noexcept {                          \
+            return quill::LogMacroMetadata{QUILL_STRINGIFY(__LINE__), __FILE__,                    \
+                                                    function_name, fmt, log_statement_level}; }    \
+          } anonymous_log_record_info;                                                             \
+        if (likelyhood(logger && logger->should_log<log_statement_level>())) {                     \
+          constexpr bool try_fast_queue {true}; /* Available in dual queue mode only */            \
+          constexpr bool is_backtrace_log_record {false};                                          \
+          logger->log<try_fast_queue, is_backtrace_log_record, decltype(anonymous_log_record_info)>\
+                                                                (FMT_STRING(fmt),  ##__VA_ARGS__); \
+        }                                                                                          \
+      }                                                                                            \
+    }                                                                                              \
   } while (0)
 
 #define QUILL_BACKTRACE_LOGGER_CALL(logger, fmt, ...)                                              \
