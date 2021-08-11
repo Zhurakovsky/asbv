@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(COMMON_HEADERS_DIRECTORY ${COMMON_HEADERS_DIRECTORY}  PARENT_SCOPE)
-set(OUTPUT_DIR ${OUTPUT_DIR}  PARENT_SCOPE)
 
 find_package(Threads)
 
@@ -38,7 +37,6 @@ add_executable(sensorApp
 	)
 	
 target_include_directories(sensorApp PUBLIC ${COMMON_HEADERS_DIRECTORY})
-target_include_directories(sensorApp PRIVATE ${CMAKE_SOURCE_DIR}/plotting)
 
 if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7l")
 if(WIRINGPI_LIBRARIES)
@@ -47,11 +45,12 @@ if(WIRINGPI_LIBRARIES)
 endif()
 endif()
 
-target_link_libraries(sensorApp Threads::Threads
-    plotting
-    quill::quill
+target_link_libraries(sensorApp 
+    PRIVATE quill::quill
+    ${CMAKE_THREAD_LIBS_INIT}
 )
 
-install(TARGETS sensorApp
-    RUNTIME DESTINATION ${OUTPUT_DIR}
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sensorApp> ${PROJECT_BINARY_DIR}/../sensorApp
+    COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE:sensorApp> ${PROJECT_BINARY_DIR}
 )

@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(COMMON_HEADERS_DIRECTORY ${COMMON_HEADERS_DIRECTORY}  PARENT_SCOPE)
-set(OUTPUT_DIR ${OUTPUT_DIR}  PARENT_SCOPE)
 
 find_package(Threads)
 
@@ -25,6 +24,7 @@ target_link_libraries(pidControllerApp Threads::Threads)
 
 target_include_directories(pidControllerApp PRIVATE ${COMMON_HEADERS_DIRECTORY})
 
-install(TARGETS pidControllerApp
-    RUNTIME DESTINATION ${OUTPUT_DIR}
+add_custom_command(TARGET pidControllerApp POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:pidControllerApp> ${PROJECT_BINARY_DIR}/../pidControllerApp
+    COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE:pidControllerApp> ${PROJECT_BINARY_DIR}
 )

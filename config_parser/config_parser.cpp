@@ -61,12 +61,6 @@ err_t ConfigParser::print_parsed_config()
         cout << key << " | " << val << endl << endl;
     }
 
-    cout << endl << "WebUI configuration" << endl;
-    for (const auto& [key, val] : this->parsed_config[CONFIG_WEBUI])
-    {
-        cout << key << " | " << val << endl << endl;
-    }
-
     return RC_SUCCESS;
 }
 
@@ -101,10 +95,6 @@ err_t ConfigParser::parse_config()
         else if (line.find("[pid]") != string::npos)
         {
             current_secton = &(this->parsed_config[CONFIG_PID]);
-        }
-        else if (line.find("[webui]") != string::npos)
-        {
-            current_secton = &(this->parsed_config[CONFIG_WEBUI]);
         }
         else
         {
@@ -157,9 +147,4 @@ std::vector<std::string> ConfigParser::get_pid_config_line()
 std::vector<std::string> ConfigParser::get_actuator_config_line()
 {
     return get_config_line(CONFIG_ACTUATOR);
-}
-
-std::vector<std::string> ConfigParser::get_webui_config_line()
-{
-    return get_config_line(CONFIG_WEBUI);
 }

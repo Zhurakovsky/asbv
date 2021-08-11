@@ -12,7 +12,6 @@ cd $DIR/build_x86
 
 cmake  -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 make -j
-make install
 
 if [ ! -f config ]; then
 	cp $DIR/config config
