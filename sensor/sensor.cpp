@@ -49,6 +49,7 @@ err_t parse_cmdline(int argc, char** argv, SensorSwcConfigType &config)
     }
     config.socket_sensor.port = parser.config_get<int>("SOCKET_PORT"s);
     config.socket_sensor.addr = parser.config_get<string>("SOCKET_ADDR"s);
+    config.socket_sensor.reconnection_delay_ms = parser.config_get<int>("RECONNECTION_DELAY_MS"s);
 
     config.static_sensor.roll = parser.config_get<float>("STATIC_ROLL_VALUE"s);
     config.static_sensor.acc = parser.config_get<float>("STATIC_ACC_VALUE"s);

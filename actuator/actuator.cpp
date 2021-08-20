@@ -54,6 +54,7 @@ err_t parse_cmdline(int argc, char** argv, ActuatorSwcConfigType &config)
 
     config.socket_actuator.port = parser.config_get<int>("SOCKET_PORT"s);
     config.socket_actuator.addr = parser.config_get<string>("SOCKET_ADDR"s);
+    config.socket_actuator.reconnection_delay_ms = parser.config_get<int>("RECONNECTION_DELAY_MS"s);
 
     config.log.name = parser.config_get<string>("LOG_NAME"s);
     config.log.console_colour_foreground = parser.config_get<string>("LOG_CONSOLE_COLOUR_FOREGROUND"s);
