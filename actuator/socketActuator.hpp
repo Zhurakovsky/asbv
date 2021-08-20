@@ -19,6 +19,7 @@ private:
 	int mHost = 0;
 	std::string mNetworkAddress;
 	int mFileDescriptor = 0;
+    uint32_t mReconnectionDelayMs = 0;
 };
 
 }

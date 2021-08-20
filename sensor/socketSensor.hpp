@@ -20,6 +20,7 @@ private:
     std::string mNetworkAddress;
 	int mFileDescriptor = 0;
     float mAngleCur = 0.f;
+    uint32_t mReconnectionDelayMs = 0;
 
     float acclX, acclY, acclZ;
     float gyroX, gyroY, gyroZ;

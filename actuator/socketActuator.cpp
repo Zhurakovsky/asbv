@@ -3,6 +3,7 @@
 #include "socketWrappers.hpp"
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <thread>
 
 using namespace poc_autosar;
 
@@ -11,6 +12,7 @@ SocketActuator::SocketActuator(const SocketActuatorConfig& config)
 {
     mHost = config.port;
     mNetworkAddress = config.addr;
+    mReconnectionDelayMs = config.reconnection_delay_ms;
     Init();
 }
 
@@ -28,30 +30,21 @@ void SocketActuator::Init()
     
     SocketWrappers::Inet_pton(AF_INET, mNetworkAddress.c_str(), &adr.sin_addr);
 
-    SocketWrappers::Connect(mFileDescriptor, (struct sockaddr*) &adr, sizeof adr);
+    while (SocketWrappers::Connect(mFileDescriptor, (struct sockaddr*) &adr, sizeof adr) == RC_FAIL)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(mReconnectionDelayMs));
+    }
 }
 
 err_t SocketActuator::write(const ActuatorData& data)
 {
-    const char format[] = "{\"angle\":%s}";
-    const size_t formatLength = sizeof(format) - 3; // %s\0
-    
-    char angleStr[16];
-    int angleLength = sprintf(angleStr, "%f", data.steer_angle);
-
-    size_t msgLen = formatLength + angleLength + 1;
-    char* msg = static_cast<char*>(malloc(msgLen));
-    msgLen = snprintf(msg, msgLen, format, angleStr);
-    
-    std::cout << "ACTUATOR SOCKET SEND: " << msg << std::endl;
+    std::string msg = "{\"angle\":" + std::to_string(data.steer_angle) + "}";
 
     err_t result = RC_FAIL;
-    if (SocketWrappers::Write(mFileDescriptor, msg, msgLen) != RC_FAIL)
+    if (SocketWrappers::Write(mFileDescriptor, msg.c_str(), msg.length()) != RC_FAIL)
     {
         result = RC_SUCCESS;
     }
-    
-    free(msg);
 
     return result;
 }
