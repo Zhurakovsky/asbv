@@ -1,4 +1,5 @@
 #include "socketWrappers.hpp"
+#include "types.hpp"
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -12,9 +13,9 @@ using namespace poc_autosar;
 int SocketWrappers::Socket(int domain, int type, int protocol)
 {
 	int res = socket(domain, type, protocol);
-	if (res == -1) {
+	if (res == RC_FAIL)
+	{
 		std::perror("socket failed");
-		//exit(EXIT_FAILURE);
 	}
 	return res;
 }
@@ -22,27 +23,27 @@ int SocketWrappers::Socket(int domain, int type, int protocol)
 void SocketWrappers::Bind(int sockfd, const struct sockaddr* addr, socklen_t addrlen)
 {
 	int res = bind(sockfd, addr, addrlen);
-	if (res == -1) {
+	if (res == RC_FAIL)
+	{
 		std::perror("bind failed");
-		//exit(EXIT_FAILURE);
 	}
 }
 
 void SocketWrappers::Listen(int sockfd, int backlog)
 {
 	int res = listen(sockfd, backlog);
-	if (res == -1) {
+	if (res == RC_FAIL)
+	{
 		std::perror("listen failed");
-		//exit(EXIT_FAILURE);
 	}
 }
 
 int SocketWrappers::Accept(int sockfd, struct sockaddr* addr, socklen_t* addrlen)
 {
 	int res = accept(sockfd, addr, addrlen);
-	if (res == -1) {
+	if (res == RC_FAIL)
+	{
 		std::perror("accept failed");
-		//exit(EXIT_FAILURE);
 	}
 	return res;
 }
@@ -50,9 +51,9 @@ int SocketWrappers::Accept(int sockfd, struct sockaddr* addr, socklen_t* addrlen
 int SocketWrappers::Connect(int sockfd, const struct sockaddr* addr, socklen_t addrlen)
 {
 	int res = connect(sockfd, addr, addrlen);
-	if (res == -1) {
+	if (res == RC_FAIL)
+	{
 		std::perror("connect failed");
-		//exit(EXIT_FAILURE);
 	}
 	return res;
 }
@@ -60,24 +61,22 @@ int SocketWrappers::Connect(int sockfd, const struct sockaddr* addr, socklen_t a
 void SocketWrappers::Inet_pton(int af, const char* src, void* dst)
 {
 	int res = inet_pton(af, src, dst);
-	if (res == 0) {
+	if (res == 0) // 0 - is not success, inet_pton returns 1 on success
+	{
 		std::cout << "inet_pton failed: src does not contain a character string representing a valid network address in the specified address family" << std::endl;
-		//exit(EXIT_FAILURE);
 	}
-	if (res == -1) {
+	else if (res == RC_FAIL)
+	{
 		std::perror("inet_pton failed");
-		//exit(EXIT_FAILURE);
 	}
 }
 
 ssize_t SocketWrappers::Read(int sockfd, char* buf, size_t count)
 {
 	ssize_t nread = read(sockfd, buf, count);
-	
-	if (nread == -1)
+	if (nread == RC_FAIL)
 	{
 		std::perror("read failed");
-		//exit(EXIT_FAILURE);
 	}
 	else if (nread == 0)
 	{
@@ -90,11 +89,9 @@ ssize_t SocketWrappers::Read(int sockfd, char* buf, size_t count)
 ssize_t SocketWrappers::Write(int fd, const void* buf, size_t count)
 {
 	ssize_t nwrite = write(fd, buf, count);
-	
-	if (nwrite == -1)
+	if (nwrite == RC_FAIL)
 	{
 		std::perror("write failed");
-		//exit(EXIT_FAILURE);
 	}
 
 	return nwrite;

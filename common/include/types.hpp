@@ -85,6 +85,7 @@ struct SocketSensorConfig
 {
     std::string addr;
     uint32_t port;
+    uint32_t reconnection_delay_ms;
 };
 
 struct StaticSensorConfig
@@ -124,6 +125,7 @@ struct SocketActuatorConfig
 {
     std::string addr;
     uint32_t port;
+    uint32_t reconnection_delay_ms;
 };
 
 struct ActuatorSwcConfigType
