@@ -10,6 +10,8 @@ set(COMMON_HEADERS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/common/include)
 message("MY PROCESSOR *******" ${CMAKE_SYSTEM_PROCESSOR})
 message("MY SYSTEM *******" ${CMAKE_SYSTEM_NAME})
 
+set (CMAKE_CXX_FLAGS "-fno-stack-protector")
+
 find_package(Threads)
 
 add_subdirectory(quill)
